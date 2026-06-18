@@ -22,7 +22,7 @@ let appointments = [
     customer: "Cliente A"
   }
 ];
-
+ 
 const startHour = 8;
 const endHour = 20;
 const slotHeight = 60;
