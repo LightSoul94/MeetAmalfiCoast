@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "gAwcNSDgOa+eHDcOtQooUXz/ooFr0vQuR1dddP7n6CY=",
+  "Hash": "6NXhajSxwMB12cRyr077K5D2al66RqRw0t4jOIdUs90=",
   "Source": "MeetAmalfiCoasts",
   "BasePath": "_content/MeetAmalfiCoasts",
   "Mode": "Default",
@@ -112,6 +112,25 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
+      "Identity": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\firebaseConfig.js",
+      "SourceId": "MeetAmalfiCoasts",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\",
+      "BasePath": "_content/MeetAmalfiCoasts",
+      "RelativePath": "js/firebaseConfig.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\firebaseConfig.js"
+    },
+    {
       "Identity": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\planning.js",
       "SourceId": "MeetAmalfiCoasts",
       "SourceType": "Discovered",
@@ -129,6 +148,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\planning.js"
+    },
+    {
+      "Identity": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\planningService.js",
+      "SourceId": "MeetAmalfiCoasts",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\",
+      "BasePath": "_content/MeetAmalfiCoasts",
+      "RelativePath": "js/planningService.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\planningService.js"
     },
     {
       "Identity": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\script.js",

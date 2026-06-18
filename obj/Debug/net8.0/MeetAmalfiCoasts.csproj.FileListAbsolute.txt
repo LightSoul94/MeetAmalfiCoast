@@ -28,3 +28,4 @@ C:\Progetti\MeetAmalfiCoasts\obj\Debug\net8.0\refint\MeetAmalfiCoasts.dll
 C:\Progetti\MeetAmalfiCoasts\obj\Debug\net8.0\MeetAmalfiCoasts.pdb
 C:\Progetti\MeetAmalfiCoasts\obj\Debug\net8.0\MeetAmalfiCoasts.genruntimeconfig.cache
 C:\Progetti\MeetAmalfiCoasts\obj\Debug\net8.0\ref\MeetAmalfiCoasts.dll
+C:\Progetti\MeetAmalfiCoasts\obj\Debug\net8.0\MeetAmalfiCoasts.sourcelink.json

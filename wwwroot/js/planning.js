@@ -11,39 +11,35 @@ if (browserLang.startsWith("it")) {
 
 let selectedDate = new Date();
 
-const people = ["Mario", "Luigi", "Anna", "Francesca"];
+const people = ["Marco"];
 
-let appointments = [
-  {
-    person: "Mario",
-    title: "Taglio capelli",
-    start: "09:00",
-    end: "10:00",
-    customer: "Cliente A"
-  }
-];
- 
+let appointments = [];
+
+let unsubscribeAppointments = null;
+
 const startHour = 8;
 const endHour = 20;
 const slotHeight = 60;
 const minutesStep = 15;
 
 $(document).ready(function () {
-  renderCalendar();
+
+  loadAppointmentsForSelectedDate();
 
   $("#prevDay").on("click", function () {
     selectedDate.setDate(selectedDate.getDate() - 1);
-    renderCalendar();
+    loadAppointmentsForSelectedDate();
   });
 
   $("#nextDay").on("click", function () {
     selectedDate.setDate(selectedDate.getDate() + 1);
-    renderCalendar();
+    loadAppointmentsForSelectedDate();
   });
 
   setInterval(() => {
     renderCurrentTimeLine();
   }, 1000);
+
 });
 
 function renderCalendar() {
@@ -55,6 +51,8 @@ function renderCalendar() {
   people.forEach((person) => {
     renderPersonColumn(person);
   });
+
+  renderCurrentTimeLine();
 }
 
 function renderTimeColumn() {
@@ -77,6 +75,22 @@ function renderTimeColumn() {
   }
 
   $("#calendarGrid").append(timeColumn);
+}
+
+function loadAppointmentsForSelectedDate() {
+  const isoDate = toIsoDate(selectedDate);
+
+  if (unsubscribeAppointments) {
+    unsubscribeAppointments();
+  }
+
+  unsubscribeAppointments = PlanningService.listenAppointmentsByDate(
+    isoDate,
+    function (items) {
+      appointments = items;
+      renderCalendar();
+    }
+  );
 }
 
 function renderPersonColumn(person) {
@@ -264,7 +278,7 @@ function openCreateAppointmentAlert(person, startTime) {
       const customer = $("#swal-customer").val().trim();
       const customerEmail = $("#swal-customer-email").val().trim();
       const pickedDate = $("#swal-date").datepicker("getDate");
-      const isoDate = pickedDate.getFullYear() + "-" + String(pickedDate.getMonth() + 1).padStart(2, "0") + "-" + String(pickedDate.getDate()).padStart(2, "0");
+      const isoDate = toIsoDate(pickedDate);
       const start = $("#swal-start").val();
       const end = $("#swal-end").val();
 
@@ -292,8 +306,7 @@ function openCreateAppointmentAlert(person, startTime) {
     }
   }).then((result) => {
     if (result.isConfirmed) {
-      appointments.push(result.value);
-      renderCalendar();
+      PlanningService.createAppointment(result.value);
 
       Swal.fire({
         icon: "success",
@@ -396,4 +409,13 @@ function renderCurrentTimeLine() {
     .css("top", `${top}px`);
 
   $(".person-body").append(line);
+}
+
+// Funzione per convertire una data in formato ISO (YYYY-MM-DD)
+function toIsoDate(date) {
+  return date.getFullYear() +
+    "-" +
+    String(date.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(date.getDate()).padStart(2, "0");
 }

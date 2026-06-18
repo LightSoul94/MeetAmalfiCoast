@@ -17,8 +17,16 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\firebaseConfig.js",
+      "PackagePath": "staticwebassets\\js\\firebaseConfig.js"
+    },
+    {
       "Id": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\planning.js",
       "PackagePath": "staticwebassets\\js\\planning.js"
+    },
+    {
+      "Id": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\planningService.js",
+      "PackagePath": "staticwebassets\\js\\planningService.js"
     },
     {
       "Id": "C:\\Progetti\\MeetAmalfiCoasts\\wwwroot\\js\\script.js",
