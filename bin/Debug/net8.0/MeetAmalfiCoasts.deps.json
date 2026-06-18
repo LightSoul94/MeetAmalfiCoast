@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "MeetAmalfiCoasts/1.0.0": {
+        "runtime": {
+          "MeetAmalfiCoasts.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MeetAmalfiCoasts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

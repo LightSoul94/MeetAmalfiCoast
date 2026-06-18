@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/planning.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.it.min.js"></script>
+    <script src="~/js/planning.js"></script>
+}
+
+<body>
+
+  <div class="container-fluid p-3">
+    <div class="calendar-card">
+
+      <div class="calendar-header">
+        <button class="btn btn-outline-primary btn-sm" id="prevDay">←</button>
+        <div>
+          <h4 id="currentDate" class="mb-0"></h4>
+          <span class="text-muted">Calendario appuntamenti</span>
+        </div>
+        <button class="btn btn-outline-primary btn-sm" id="nextDay">→</button>
+      </div>
+
+      <div class="calendar-grid" id="calendarGrid">
+        <!-- generato da planning.js -->
+      </div>
+
+    </div>
+  </div>
+
+</body>

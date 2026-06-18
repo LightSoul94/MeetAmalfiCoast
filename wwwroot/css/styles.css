@@ -1,0 +1,35 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* DATE PICKER GENERICO */
+.datepicker table tr td.active {
+    background: #8e44ad;
+}
+
+.datepicker table tr td.today {
+    background: #ffc107;
+}
+
+.datepicker table tr td.disabled {
+    background: #dc3545;
+}
