@@ -1,8 +1,9 @@
 const PlanningService = (function () {
 
-  function listenAppointmentsByDate(isoDate, callback) {
+  function listenAppointmentsByRange(startIsoDate, endIsoDate, callback) {
     return window.db.collection("appointments")
-      .where("isoDate", "==", isoDate)
+      .where("isoDate", ">=", startIsoDate)
+      .where("isoDate", "<=", endIsoDate)
       .onSnapshot(function (snapshot) {
         const items = [];
 
@@ -25,7 +26,7 @@ const PlanningService = (function () {
   }
 
   return {
-    listenAppointmentsByDate,
+    listenAppointmentsByRange,
     createAppointment
   };
 

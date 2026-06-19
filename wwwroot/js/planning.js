@@ -11,7 +11,7 @@ if (browserLang.startsWith("it")) {
 
 let selectedDate = new Date();
 
-const people = ["Marco"];
+let currentWeekDays = [];
 
 let appointments = [];
 
@@ -24,16 +24,16 @@ const minutesStep = 15;
 
 $(document).ready(function () {
 
-  loadAppointmentsForSelectedDate();
+  loadAppointmentsForSelectedWeek();
 
-  $("#prevDay").on("click", function () {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-    loadAppointmentsForSelectedDate();
+  $("#prevWeek").on("click", function () {
+    selectedDate.setDate(selectedDate.getDate() - 7);
+    loadAppointmentsForSelectedWeek();
   });
 
-  $("#nextDay").on("click", function () {
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    loadAppointmentsForSelectedDate();
+  $("#nextWeek").on("click", function () {
+    selectedDate.setDate(selectedDate.getDate() + 7);
+    loadAppointmentsForSelectedWeek();
   });
 
   setInterval(() => {
@@ -44,12 +44,13 @@ $(document).ready(function () {
 
 function renderCalendar() {
   $("#calendarGrid").empty();
-  $("#currentDate").text(formatDate(selectedDate));
 
   renderTimeColumn();
 
-  people.forEach((person) => {
-    renderPersonColumn(person);
+  currentWeekDays = getWeekDays(selectedDate);
+
+  currentWeekDays.forEach((dayInfo) => {
+    renderDayColumn(dayInfo);
   });
 
   renderCurrentTimeLine();
@@ -77,15 +78,19 @@ function renderTimeColumn() {
   $("#calendarGrid").append(timeColumn);
 }
 
-function loadAppointmentsForSelectedDate() {
-  const isoDate = toIsoDate(selectedDate);
+function loadAppointmentsForSelectedWeek() {
+  currentWeekDays = getWeekDays(selectedDate);
+
+  const startIsoDate = currentWeekDays[0].isoDate;
+  const endIsoDate = currentWeekDays[6].isoDate;
 
   if (unsubscribeAppointments) {
     unsubscribeAppointments();
   }
 
-  unsubscribeAppointments = PlanningService.listenAppointmentsByDate(
-    isoDate,
+  unsubscribeAppointments = PlanningService.listenAppointmentsByRange(
+    startIsoDate,
+    endIsoDate,
     function (items) {
       appointments = items;
       renderCalendar();
@@ -93,12 +98,16 @@ function loadAppointmentsForSelectedDate() {
   );
 }
 
-function renderPersonColumn(person) {
-  const column = $("<div>").addClass("person-column");
+function renderDayColumn(dayInfo) {
+  const column = $("<div>").addClass("day-column");
 
-  column.append($("<div>").addClass("person-header").text(person));
+  column.append(
+    $("<div>")
+      .addClass("day-header")
+      .html(`${capitalize(dayInfo.name)}<br><small>${dayInfo.shortDate}</small>`)
+  );
 
-  const body = $("<div>").addClass("person-body");
+  const body = $("<div>").addClass("day-body");
 
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += minutesStep) {
@@ -108,12 +117,12 @@ function renderPersonColumn(person) {
       )}`;
 
       const slot = $("<div>")
-        .addClass("person-slot quarter-slot")
-        .attr("data-person", person)
+        .addClass("day-slot quarter-slot")
+        .attr("data-date", dayInfo.isoDate)
         .attr("data-time", time)
         .append($("<span>").addClass("slot-time").text(time))
         .on("click", function () {
-          openCreateAppointmentAlert(person, time);
+          openCreateAppointmentAlert(dayInfo, time);
         });
 
       body.append(slot);
@@ -121,7 +130,7 @@ function renderPersonColumn(person) {
   }
 
   appointments
-    .filter((app) => app.person === person)
+    .filter((app) => app.isoDate === dayInfo.isoDate)
     .forEach((app) => {
       body.append(createAppointment(app));
     });
@@ -130,7 +139,7 @@ function renderPersonColumn(person) {
   $("#calendarGrid").append(column);
 }
 
-function openCreateAppointmentAlert(person, startTime) {
+function openCreateAppointmentAlert(dayInfo, startTime) {
   Swal.fire({
     title: "Nuovo appuntamento",
     html: `
@@ -181,10 +190,8 @@ function openCreateAppointmentAlert(person, startTime) {
 
                 <div class="row g-2 align-items-end mt-2">
                     <div class="col-3">
-                        <label class="form-label mb-1">Operatore</label>
-                        <select id="swal-person" class="form-select">
-                            <option value="${person}" selected>${person}</option>
-                        </select>
+                        <label class="form-label mb-1">Giorno</label>
+                        <input id="swal-day" class="form-control" value="${capitalize(dayInfo.name)} ${dayInfo.shortDate}" readonly>
                     </div>
 
                     <div class="col-9">
@@ -223,8 +230,8 @@ function openCreateAppointmentAlert(person, startTime) {
 
     //         <div class="col-9">
     //             <label class="form-label mb-1">Operatore</label>
-    //             <select id="swal-person" class="form-select">
-    //                 <option value="${person}" selected>${person}</option>
+    //             <select id="swal-day" class="form-select">
+    //                 <option value="${day}" selected>${day}</option>
     //             </select>
     //         </div>
 
@@ -271,7 +278,7 @@ function openCreateAppointmentAlert(person, startTime) {
         weekStart: 1
       });
 
-      $("#swal-date").datepicker("setDate", selectedDate);
+      $("#swal-date").datepicker("setDate", dayInfo.date);
     },
     preConfirm: () => {
       const title = $("#swal-title").val().trim();
@@ -300,7 +307,6 @@ function openCreateAppointmentAlert(person, startTime) {
         end,
         title,
         customer,
-        person,
         customerEmail
       };
     }
@@ -343,7 +349,7 @@ function createAppointment(app) {
       title: app.title,
       html: `
                 <strong>Cliente:</strong> ${app.customer}<br>
-                <strong>Persona:</strong> ${app.person}<br>
+                <strong>Email:</strong> ${app.customerEmail}<br>
                 <strong>Orario:</strong> ${app.start} - ${app.end}
             `,
       icon: "info"
@@ -408,7 +414,7 @@ function renderCurrentTimeLine() {
     .addClass("current-time-line")
     .css("top", `${top}px`);
 
-  $(".person-body").append(line);
+  $(".day-body").append(line);
 }
 
 // Funzione per convertire una data in formato ISO (YYYY-MM-DD)
@@ -418,4 +424,37 @@ function toIsoDate(date) {
     String(date.getMonth() + 1).padStart(2, "0") +
     "-" +
     String(date.getDate()).padStart(2, "0");
+}
+
+// Funzione per ottenere i giorni della settimana a partire da una data
+function getWeekDays(date) {
+  const monday = new Date(date);
+  const day = monday.getDay();
+
+  const diff = day === 0 ? -6 : 1 - day;
+  monday.setDate(monday.getDate() + diff);
+
+  const days = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+
+    days.push({
+      name: d.toLocaleDateString(browserLang, { weekday: "long" }),
+      shortDate: d.toLocaleDateString(browserLang, {
+        day: "2-digit",
+        month: "2-digit"
+      }),
+      isoDate: toIsoDate(d),
+      date: d
+    });
+  }
+
+  return days;
+}
+
+// Funzione per capitalizzare la prima lettera di una stringa
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }

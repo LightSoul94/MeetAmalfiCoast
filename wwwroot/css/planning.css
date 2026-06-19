@@ -18,18 +18,18 @@ body {
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: 80px repeat(4, 1fr);
+  grid-template-columns: 80px repeat(7, minmax(150px, 1fr));
   border: 1px solid #ddd;
   overflow-x: auto;
 }
 
 .time-column,
-.person-column {
+.day-column {
   border-right: 1px solid #ddd;
 }
 
 .time-header,
-.person-header {
+.day-header {
   height: 55px;
   padding: 12px;
   font-weight: bold;
@@ -67,22 +67,22 @@ body {
   line-height: 1;
 }
 
-.person-body {
+.day-body {
   position: relative;
 }
 
-.person-slot {
+.day-slot {
   height: 15px;
   border-bottom: 1px solid #f1f1f1;
   cursor: pointer;
   position: relative;
 }
 
-.person-slot:hover {
+.day-slot:hover {
   background: #eef5ff;
 }
 
-.person-slot:hover .slot-time {
+.day-slot:hover .slot-time {
   color: #0d6efd;
 }
 
@@ -92,42 +92,57 @@ body {
 
 .appointment {
   position: absolute;
-  left: 6px;
-  right: 6px;
-  background: #dbeafe;
-  border-left: 4px solid #0d6efd;
-  border-radius: 8px;
-  padding: 6px;
-  font-size: 13px;
+  left: 8px;
+  right: 8px;
+  background: #e7f1ff;
+  border-left: 5px solid #0d6efd;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
   overflow: hidden;
   cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.18);
 }
 
 .appointment strong {
   display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b3d91;
+  margin-bottom: 2px;
 }
 
 .appointment span {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: #333;
-}
-
-@media (max-width: 768px) {
-  .calendar-grid {
-    min-width: 900px;
-  }
+  line-height: 1.25;
 }
 
 .current-time-line {
     position: absolute;
     left: 0;
     right: 0;
-
     height: 2px;
-
     background: red;
-
     z-index: 999;
     pointer-events: none;
+}
+
+.day-header {
+  line-height: 1.2;
+}
+
+.day-header small {
+  display: block;
+  font-size: 12px;
+  color: #555;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .calendar-grid {
+    min-width: 900px;
+  }
 }
