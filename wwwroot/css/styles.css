@@ -8,8 +8,14 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow:
+        0 0 0 .2rem rgba(214,173,97,.20),
+        0 0 12px rgba(214,173,97,.25);
 }
 
 html {
@@ -23,13 +29,555 @@ body {
 
 /* DATE PICKER GENERICO */
 .datepicker table tr td.active {
-    background: #8e44ad;
+  background: #8e44ad;
 }
 
 .datepicker table tr td.today {
-    background: #ffc107;
+  background: #ffc107;
 }
 
 .datepicker table tr td.disabled {
-    background: #dc3545;
+  background: #dc3545;
+}
+
+
+
+
+/**/
+
+:root {
+  --black: #070707;
+  --dark: #0d0d0d;
+  --gold: #d6ad61;
+  --gold-light: #f0d28a;
+  --white: #f7f2e8;
+  --muted: #bcb7ad;
+  --border: rgba(214, 173, 97, .35);
+  --bs-primary: #d6ad61;
+  --bs-primary-light: #f0d28a;
+}
+
+.btn-outline-primary {
+
+  color: #d6ad61;
+  border: 1px solid #d6ad61;
+  background: transparent;
+
+  transition: all .25s ease;
+
+}
+
+.btn-outline-primary:hover {
+
+  color: #111111;
+
+  background: linear-gradient(
+      135deg,
+      #d6ad61 0%,
+      #f0d28a 100%
+  );
+
+  border-color: #f0d28a;
+
+  box-shadow:
+      0 4px 14px rgba(214, 173, 97, .28),
+      0 0 2px rgba(240, 210, 138, .45);
+
+}
+
+.btn-outline-primary:active {
+
+  color: #111111;
+
+  background: #c89c4d;
+
+  border-color: #c89c4d;
+
+  box-shadow:
+      inset 0 2px 5px rgba(0,0,0,.30),
+      0 0 8px rgba(214, 173, 97, .18);
+
+}
+
+.btn-outline-primary:focus {
+
+  color: #111111;
+
+  background: #d6ad61;
+
+  border-color: #f0d28a;
+
+  box-shadow:
+      0 0 0 .2rem rgba(214,173,97,.20),
+      0 0 12px rgba(214,173,97,.25);
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--white);
+  background: var(--black);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header {
+  background: rgba(5, 5, 5, .88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(214, 173, 97, .18);
+}
+
+.navbar {
+  min-height: 88px;
+}
+
+.brand-logo {
+  width: 460px;
+  height: 105px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.nav-link {
+  color: var(--white) !important;
+  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .09rem;
+  position: relative;
+  opacity: .9;
+}
+
+.nav-link::after {
+  content: "";
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  position: absolute;
+  left: 8px;
+  bottom: 2px;
+  transition: width .25s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: calc(100% - 16px);
+}
+
+.btn-gold,
+.btn-outline-gold {
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: .08rem;
+  font-size: .78rem;
+  padding: .9rem 1.7rem;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #17110a;
+  border: 1px solid var(--gold);
+  font-weight: 700;
+}
+
+.btn-outline-gold {
+  color: var(--white);
+  border: 1px solid var(--gold);
+  background: transparent;
+}
+
+.btn-gold:hover,
+.btn-outline-gold:hover {
+  background: var(--gold-light);
+  color: #17110a;
+  border-color: var(--gold-light);
+}
+
+.hero-section {
+  min-height: 100vh;
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .86) 0%, rgba(0, 0, 0, .55) 38%, rgba(0, 0, 0, .12) 100%),
+    url("https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1800&q=85") center/cover no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 45%, rgba(214, 173, 97, .14), transparent 28%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 88px;
+}
+
+.eyebrow {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .18rem;
+  font-size: .88rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: clamp(3rem, 6vw, 5.8rem);
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: clamp(2.3rem, 4vw, 4rem);
+  line-height: 1.08;
+}
+
+.hero-text {
+  color: var(--white);
+  max-width: 520px;
+  line-height: 1.9;
+}
+
+.gold-separator {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+.gold-separator::before,
+.gold-separator::after {
+  content: "";
+  width: 52px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.gold-separator span {
+  width: 9px;
+  height: 9px;
+  background: var(--gold-light);
+  transform: rotate(45deg);
+}
+
+.section-dark {
+  background: linear-gradient(180deg, #0b0b0b, #111);
+  border-top: 1px solid rgba(214, 173, 97, .2);
+  border-bottom: 1px solid rgba(214, 173, 97, .2);
+}
+
+.experience-card {
+  height: 100%;
+  padding: 2.3rem 1.6rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.experience-row>div:last-child .experience-card {
+  border-right: 0;
+}
+
+.experience-card i {
+  font-size: 2.6rem;
+  color: var(--gold);
+  margin-bottom: 1.4rem;
+}
+
+.experience-card h3,
+.destination-card h3 {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14rem;
+  font-size: 1.05rem;
+}
+
+.experience-card p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.split-section {
+  background: #090909;
+}
+
+.split-content {
+  padding: 6rem clamp(2rem, 6vw, 7rem);
+}
+
+.split-content p {
+  color: var(--muted);
+  line-height: 1.9;
+  max-width: 560px;
+}
+
+.split-image {
+  min-height: 560px;
+  background: url("https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?auto=format&fit=crop&w=1400&q=85") center/cover no-repeat;
+}
+
+.destination-card {
+  min-height: 290px;
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(214, 173, 97, .18);
+  background-size: cover;
+  background-position: center;
+}
+
+.destination-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, .82));
+  transition: background .25s ease;
+}
+
+.destination-card>div {
+  position: relative;
+  z-index: 1;
+}
+
+.destination-card a {
+  color: var(--gold-light);
+  text-transform: uppercase;
+  letter-spacing: .14rem;
+  font-size: .78rem;
+  border-bottom: 1px solid var(--gold-light);
+}
+
+.destination-card:hover::before {
+  background: rgba(0, 0, 0, .55);
+}
+
+.destination-positano {
+  background-image: url("https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-capri {
+  background-image: url("https://images.unsplash.com/photo-1534445867742-43195f401b6c?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-ravello {
+  background-image: url("https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-amalfi {
+  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85");
+}
+
+.contact-section {
+  background: radial-gradient(circle at 15% 15%, rgba(214, 173, 97, .12), transparent 35%), #090909;
+}
+
+.contact-section p {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.contact-info i {
+  color: var(--gold);
+  width: 24px;
+}
+
+.luxury-form {
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .03);
+}
+
+.form-label {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08rem;
+  font-size: .75rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(214, 173, 97, .28);
+  color: var(--white);
+  padding: .9rem 1rem;
+}
+
+.form-select option {
+  background: #111;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: rgba(255, 255, 255, .06);
+  color: var(--white);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 .2rem rgba(214, 173, 97, .18);
+}
+
+.site-footer {
+  background: #050505;
+  border-top: 1px solid rgba(214, 173, 97, .25);
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-links a:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 991px) {
+  .navbar {
+    min-height: auto;
+    padding: .8rem 0;
+  }
+
+  .brand-logo {
+    width: 210px;
+    height: 55px;
+  }
+
+  .navbar-collapse {
+    padding: 1rem 0 1.3rem;
+    border-top: 1px solid rgba(214, 173, 97, .18);
+    margin-top: .8rem;
+  }
+
+  .hero-section {
+    min-height: 92vh;
+  }
+
+  .hero-content {
+    padding-top: 80px;
+  }
+
+  .experience-card {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .split-image {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 575px) {
+  .brand-logo {
+    width: 178px;
+    height: 47px;
+  }
+
+  .hero-section {
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, .92) 0%, rgba(0, 0, 0, .65) 55%, rgba(0, 0, 0, .2) 100%),
+      url("https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=85") center/cover no-repeat;
+  }
+
+  .luxury-form {
+    padding: 1.3rem;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: .5rem;
+    align-items: center;
+  }
+}
+
+.experience-icon {
+  font-size: 38px;
+  color: #d9ad5b;
+  margin-bottom: 22px;
+}
+
+/*Date picker*/
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(84%) sepia(21%) saturate(675%) hue-rotate(357deg)
+          brightness(97%) contrast(89%);
+}
+
+input[type="time"] {
+  background: #1b1b1b;
+  color: #d6ad61;
+  border: 1px solid #d6ad61;
+}
+
+.swal2-confirm {
+
+  background: linear-gradient(
+      135deg,
+      #d6ad61,
+      #f0d28a
+  ) !important;
+
+  color: #111111 !important;
+
+  border: 1px solid #d6ad61 !important;
+
+  font-weight: 600;
+
+  box-shadow:
+      0 4px 14px rgba(214,173,97,.25);
+
+}
+
+.swal2-confirm:hover {
+
+  background: linear-gradient(
+      135deg,
+      #f0d28a,
+      #d6ad61
+  ) !important;
+
+  box-shadow:
+      0 6px 18px rgba(214,173,97,.35);
+
+}
+
+.swal2-cancel {
+
+  background: transparent !important;
+
+  color: #d6ad61 !important;
+
+  border: 1px solid #d6ad61 !important;
+
+  font-weight: 600;
+
+}
+
+.swal2-cancel:hover {
+
+  background: rgba(214,173,97,.10) !important;
+
+  color: #f0d28a !important;
+
+  border-color: #f0d28a !important;
+
+  box-shadow:
+      0 4px 14px rgba(214,173,97,.20);
+
 }

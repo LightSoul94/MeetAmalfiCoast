@@ -189,12 +189,12 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
                 </div>
 
                 <div class="row g-2 align-items-end mt-2">
-                    <div class="col-3">
+                    <div class="col-5">
                         <label class="form-label mb-1">Giorno</label>
                         <input id="swal-day" class="form-control" value="${capitalize(dayInfo.name)} ${dayInfo.shortDate}" readonly>
                     </div>
 
-                    <div class="col-9">
+                    <div class="col-7">
                         <input id="swal-title" class="form-control" placeholder="Descrizione">
                     </div>
                 </div>

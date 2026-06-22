@@ -1,0 +1,120 @@
+.planning-body {
+
+    background: #f4f5f7;
+
+    overflow: hidden;
+
+}
+
+.planning-header {
+
+    height: 78px;
+
+    background: linear-gradient(90deg,#080808,#1c1c1c);
+
+    border-bottom: 1px solid rgba(214,173,97,.30);
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.brand-logo-small{
+
+    width:220px;
+
+    height:auto;
+
+}
+
+.planning-title{
+
+    color:#d6ad61;
+
+    text-transform:uppercase;
+
+    letter-spacing:4px;
+
+}
+
+.planning-main{
+
+    height:calc(100vh - 78px);
+
+    overflow:auto;
+
+    padding:20px;
+
+}
+
+/*SweetAlert 2.0*/
+.swal2-popup {
+
+    background: #111111 !important;
+
+    color: #f7f2e8 !important;
+
+    border: 1px solid rgba(214,173,97,.35);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.45),
+        0 0 20px rgba(214,173,97,.12);
+
+}
+
+.swal2-title {
+
+    color: #d6ad61 !important;
+
+    font-family: Georgia, serif;
+
+    letter-spacing: 2px;
+
+}
+
+.swal2-html-container {
+
+    color: #d9d9d9 !important;
+
+}
+
+.swal2-input,
+.swal2-select,
+.swal2-textarea {
+
+    background: #1b1b1b !important;
+
+    color: #f7f2e8 !important;
+
+    border: 1px solid rgba(214,173,97,.30) !important;
+
+}
+
+.swal2-input:focus,
+.swal2-select:focus,
+.swal2-textarea:focus {
+
+    border-color: #d6ad61 !important;
+
+    box-shadow: 0 0 0 .2rem rgba(214,173,97,.18) !important;
+
+}
+
+.swal2-close {
+
+    color: #d6ad61 !important;
+
+}
+
+.swal2-close:hover {
+
+    color: #f0d28a !important;
+
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background: #1b1b1b !important;
+}
