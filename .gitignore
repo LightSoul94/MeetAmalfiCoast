@@ -2,4 +2,5 @@ bin/
 obj/
 firebase-service-account.json
 appsettings.Development.json
+appsettings.json
 *.user
