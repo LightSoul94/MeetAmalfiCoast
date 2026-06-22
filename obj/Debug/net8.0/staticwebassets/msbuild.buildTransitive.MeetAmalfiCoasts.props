@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\MeetAmalfiCoasts.props" />
-</Project>
