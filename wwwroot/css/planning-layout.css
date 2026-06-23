@@ -1,9 +1,8 @@
 .planning-body {
-
-    background: #f4f5f7;
-
-    overflow: hidden;
-
+    background: #000;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .planning-header {
@@ -18,6 +17,10 @@
 
     align-items:center;
 
+}
+
+.brand-logo{
+    margin-top: 30px;
 }
 
 .brand-logo-small{
@@ -38,15 +41,21 @@
 
 }
 
-.planning-main{
 
-    height:calc(100vh - 78px);
-
-    overflow:auto;
-
-    padding:20px;
-
+.planning-main {
+    min-height: calc(100vh - 78px);
+    overflow: visible;
+    padding: 20px;
+    background: #000;
 }
+
+/* .footer {
+    background: #050505;
+    border-top: 1px solid rgba(214,173,97,.25) !important;
+    color: #bcb7ad !important;
+    padding: 24px 0;
+} */
+
 
 /*SweetAlert 2.0*/
 .swal2-popup {

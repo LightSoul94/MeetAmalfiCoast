@@ -199,9 +199,11 @@ a {
 
 .btn-gold:hover,
 .btn-outline-gold:hover {
-  background: var(--gold-light);
+  /* background: var(--gold-light); */
+  background: #17110a;
   color: #17110a;
   border-color: var(--gold-light);
+  color: var(--gold-light);
 }
 
 .hero-section {
@@ -431,6 +433,13 @@ h2 {
   color: var(--white);
   border-color: var(--gold);
   box-shadow: 0 0 0 .2rem rgba(214, 173, 97, .18);
+}
+
+.footer {
+    background: #050505;
+    border-top: 1px solid rgba(214,173,97,.25) !important;
+    color: #bcb7ad !important;
+    padding: 24px 0;
 }
 
 .site-footer {

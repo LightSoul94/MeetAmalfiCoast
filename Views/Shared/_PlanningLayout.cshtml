@@ -25,45 +25,31 @@
 
         <div class="container-fluid px-4">
 
-            <div class="d-flex justify-content-between align-items-center">
-
-                <a href="/" class="planning-logo">
-
-                    <img src="~/images/logo/logo.png"
-                         class="brand-logo-small"
-                         alt="Meet Amalfi Coast">
-
+            <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid px-lg-5">
+                <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Meet Amalfi Coast Pro home">
+                    <img src="~/images/logo/logo.png" alt="Meet Amalfi Coast Pro" class="brand-logo" asp-append-version="true">
                 </a>
 
-                <div class="planning-title">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
+                    aria-label="Apri menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                    <h5 class="mb-0">
-                        MeetAmalfiCoast Pro Planning
-                    </h5>
-
+                <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+                    <ul class="navbar-nav align-items-lg-center gap-lg-4">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#experiences">Experiences</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#destinations">Destinations</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">About us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                        <li class="nav-item ms-lg-3"><a href="Planning" class="btn btn-gold">BOOK NOW</a>
+                        </li>
+                    </ul>
                 </div>
-
-                <div class="d-flex align-items-center gap-3">
-
-                    <button class="btn btn-outline-gold">
-
-                        <i class="bi bi-calendar-plus"></i>
-
-                        New Booking
-
-                    </button>
-
-                    <button class="btn btn-gold">
-
-                        <i class="bi bi-house"></i>
-
-                        Website
-
-                    </button>
-
-                </div>
-
             </div>
+        </nav>
 
         </div>
 
@@ -75,7 +61,7 @@
 
     </main>
 
-    <footer class="border-top footer text-muted">
+    <footer class="site-footer footer">
         <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
             <p class="mb-0">© 2026 Meet Amalfi Coast Pro. All rights reserved.</p>
             <div class="footer-links">
