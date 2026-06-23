@@ -1,19 +1,25 @@
+// Crea il builder per la configurazione dell'applicazione web
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Registra i servizi MVC
 builder.Services.AddControllersWithViews();
+
+// Configura Google Calendar da appsettings / user-secrets / variabili d'ambiente
+builder.Services.Configure<GoogleCalendarSettings>(
+    builder.Configuration.GetSection("GoogleCalendar"));
+
+// Registra i servizi applicativi
+builder.Services.AddSingleton<GoogleCalendarService>();
+builder.Services.AddSingleton<FirestorePlanningService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -28,10 +34,9 @@ app.MapControllerRoute(
         controller = "Home",
         action = "Planning"
     });
-    
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();

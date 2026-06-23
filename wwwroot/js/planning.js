@@ -302,17 +302,52 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
       }
 
       return {
+        title,
+
+        customerName: customer,
+        customerEmail,
+        customerPhone: "",
+
+        pickupAddress: "",
+        dropoffAddress: "",
+
         isoDate,
         start,
         end,
-        title,
-        customer,
-        customerEmail
+
+        notes: "",
+        status: "confirmed",
+
+        googleEventId: null,
+        googleCalendarId: null,
+
+        syncStatus: "pending",
+        syncError: null,
+
+        lastModifiedBy: "website"
       };
     }
   }).then((result) => {
     if (result.isConfirmed) {
-      PlanningService.createAppointment(result.value);
+      PlanningService.createAppointment(result.value)
+        .then(function () {
+          return PlanningService.syncWithGoogleCalendar();
+        })
+        .then(function () {
+          Swal.fire({
+            icon: "success",
+            title: "Appuntamento creato",
+            timer: 1200,
+            showConfirmButton: false
+          });
+        })
+        .catch(function () {
+          Swal.fire({
+            icon: "warning",
+            title: "Appuntamento creato",
+            text: "Creato su Firestore, ma non ancora sincronizzato con Google Calendar."
+          });
+        });
 
       Swal.fire({
         icon: "success",
@@ -339,7 +374,7 @@ function createAppointment(app) {
       height: `${height}px`
     })
     .append($("<strong>").text(app.title))
-    .append($("<span>").text(app.customer))
+    .append($("<span>").text(app.customerName))
     .append($("<span>").text(`${app.start} - ${app.end}`));
 
   appointment.on("click", function (e) {
@@ -348,7 +383,7 @@ function createAppointment(app) {
     Swal.fire({
       title: app.title,
       html: `
-                <strong>Cliente:</strong> ${app.customer}<br>
+                <strong>Cliente:</strong> ${app.customerName}<br>
                 <strong>Email:</strong> ${app.customerEmail}<br>
                 <strong>Orario:</strong> ${app.start} - ${app.end}
             `,
