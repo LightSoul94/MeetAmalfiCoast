@@ -450,6 +450,101 @@ h2 {
   background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85");
 }
 
+.google-stars {
+    font-size: 42px;
+    color: #d6ad61;
+    letter-spacing: 6px;
+}
+
+#googleRating {
+    font-size: 32px;
+    color: #f7f2e8;
+}
+
+#googleReviewsCount {
+    display: block;
+    color: #bcb7ad;
+    margin-top: 6px;
+}
+
+.reviews-section {
+
+    background:#090909;
+    overflow:hidden;
+
+}
+
+.reviews-slider {
+
+    overflow:hidden;
+    position:relative;
+
+}
+
+.reviews-track {
+
+    display:flex;
+    gap:24px;
+
+    width:max-content;
+
+    animation:reviewsScroll 60s linear infinite;
+
+}
+
+.reviews-slider:hover .reviews-track {
+
+    animation-play-state:paused;
+
+}
+
+.review-card {
+
+    width:380px;
+
+    padding:30px;
+
+    background:#111;
+
+    border:1px solid rgba(214,173,97,.25);
+
+    color:#f7f2e8;
+
+    flex-shrink:0;
+
+}
+
+.review-card h5 {
+
+    color:#d6ad61;
+
+}
+
+.review-stars {
+
+    color:#d6ad61;
+    font-size:20px;
+    margin-bottom:15px;
+
+}
+
+@keyframes reviewsScroll {
+
+    from {
+
+        transform:translateX(0);
+
+    }
+
+    to {
+
+        transform:translateX(-50%);
+
+    }
+
+}
+
+
 .contact-section {
   background: radial-gradient(circle at 15% 15%, rgba(214, 173, 97, .12), transparent 35%), #090909;
 }
