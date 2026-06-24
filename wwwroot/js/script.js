@@ -5,31 +5,130 @@
 
 // Metodo per la gestione dello scroll della navbar e del form di contatto
 $(function () {
-  $(window).on('scroll', function () {
+
+  function closeMobileNavbar() {
+    const navbarElement = document.getElementById("mainNavbar");
+
+    if (!navbarElement)
+      return;
+
+    const navbar = bootstrap.Collapse.getInstance(navbarElement);
+
+    if (navbar)
+      navbar.hide();
+  }
+
+  function setActiveNavByHash(hash) {
+    $(".nav-link").removeClass("active");
+
+    if (!hash || hash === "#home") {
+      $('.nav-link[href="/"], .nav-link[href="/#home"]').addClass("active");
+      return;
+    }
+
+    $(`.nav-link[href="/${hash}"], .nav-link[href="${hash}"]`).addClass("active");
+  }
+
+  function updateActiveSection() {
+    if (window.location.pathname !== "/")
+      return;
+
+    const headerHeight = $(".site-header").outerHeight() || 0;
+    const scrollPosition = $(window).scrollTop() + headerHeight + 120;
+
+    let activeId = "";
+
+    $("section[id]").each(function () {
+      const sectionTop = $(this).offset().top;
+      const sectionBottom = sectionTop + $(this).outerHeight();
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+        activeId = $(this).attr("id");
+      }
+    });
+
+    if (activeId) {
+      setActiveNavByHash("#" + activeId);
+    } else {
+      setActiveNavByHash("");
+    }
+  }
+
+  function scrollToHashSection(hash) {
+    if (!hash)
+      return;
+
+    const target = $(hash);
+
+    if (!target.length) {
+      window.location.href = "/" + hash;
+      return;
+    }
+
+    const headerHeight = $(".site-header").outerHeight() || 0;
+
+    $("html, body").animate({
+      scrollTop: target.offset().top - headerHeight
+    }, 400, function () {
+      updateActiveSection();
+    });
+
+    setActiveNavByHash(hash);
+  }
+
+  $(window).on("scroll", function () {
     const scrolled = $(this).scrollTop() > 40;
-    $('.site-header').toggleClass('is-scrolled', scrolled);
+
+    $(".site-header").toggleClass("is-scrolled", scrolled);
+
+    updateActiveSection();
   });
 
-  $('.nav-link, .btn[href^="#"]').on('click', function () {
-    const navbar = bootstrap.Collapse.getInstance(document.getElementById('mainNavbar'));
-    if (navbar) navbar.hide();
+  $(".nav-link[href^='/#'], .nav-link[href^='#'], .btn[href^='#']").on("click", function (event) {
+    const hash = this.hash;
+
+    closeMobileNavbar();
+
+    if (!hash)
+      return;
+
+    if (window.location.pathname !== "/") {
+      window.location.href = "/" + hash;
+      return;
+    }
+
+    if ($(hash).length) {
+      event.preventDefault();
+
+      history.pushState(null, "", hash);
+      scrollToHashSection(hash);
+    }
   });
 
-  $('#contactForm').on('submit', function (event) {
+  if (window.location.hash) {
+    setTimeout(function () {
+      scrollToHashSection(window.location.hash);
+    }, 100);
+  } else if (window.location.pathname === "/") {
+    updateActiveSection();
+  }
+
+  $("#contactForm").on("submit", function (event) {
     event.preventDefault();
 
     Swal.fire({
-      icon: 'success',
-      title: 'Request sent',
-      text: 'Thank you. We will contact you soon to plan your Amalfi Coast experience.',
-      confirmButtonText: 'Perfect',
-      background: '#0d0d0d',
-      color: '#f7f2e8',
-      confirmButtonColor: '#d6ad61'
+      icon: "success",
+      title: "Request sent",
+      text: "Thank you. We will contact you soon to plan your Amalfi Coast experience.",
+      confirmButtonText: "Perfect",
+      background: "#0d0d0d",
+      color: "#f7f2e8",
+      confirmButtonColor: "#d6ad61"
     });
 
     this.reset();
   });
+
 });
 
 // Metodo per lo slider dell'hero
