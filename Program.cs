@@ -8,6 +8,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<GoogleCalendarSettings>(
     builder.Configuration.GetSection("GoogleCalendar"));
 
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("Smtp"));
+
 // Registra i servizi applicativi
 builder.Services.AddSingleton<GoogleCalendarService>();
 builder.Services.AddSingleton<FirestorePlanningService>();

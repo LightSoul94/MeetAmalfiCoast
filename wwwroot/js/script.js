@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 
 
-// Metodo per invio del form di contatto con SweetAlert2
+// Metodo per la gestione dello scroll della navbar e del form di contatto
 $(function () {
   $(window).on('scroll', function () {
     const scrolled = $(this).scrollTop() > 40;
@@ -92,3 +92,68 @@ function initHeroCarousel() {
     setTimeout(showNextSlide, 6000);
   }
 }
+
+// Metodo per invio del form di contatto con SweetAlert2 e Ajax
+$("#btnSendRequest").on("click", function () {
+
+    const data = {
+        Name: $("#name").val().trim(),
+        Email: $("#email").val().trim(),
+        Service: $("#service").val(),
+        Message: $("#message").val().trim()
+    };
+
+    if (!data.Name || !data.Email || !data.Service || !data.Message) {
+
+        Swal.fire({
+            icon: "warning",
+            title: "Missing information",
+            text: "Please fill in all fields."
+        });
+
+        return;
+    }
+
+    $.ajax({
+
+        url: "/Home/SendContactRequest",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+
+        success: function (response) {
+
+            if (response.success) {
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Request sent",
+                    text: "Thank you! We will contact you soon."
+                });
+
+                $("#name").val("");
+                $("#email").val("");
+                $("#service").val("");
+                $("#message").val("");
+            }
+            else {
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: response.message
+                });
+            }
+        },
+
+        error: function () {
+
+            Swal.fire({
+                icon: "error",
+                title: "Server error",
+                text: "Unable to send your request."
+            });
+        }
+    });
+
+});

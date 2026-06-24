@@ -174,49 +174,91 @@
     <section id="contact" class="contact-section py-5">
       <div class="container py-lg-4">
         <div class="row align-items-center g-5">
+
           <div class="col-lg-5">
             <p class="eyebrow">Stay inspired</p>
+
             <h2>Plan your exclusive experience</h2>
-            <p>Raccontaci cosa vuoi vivere in Costiera Amalfitana. Ti ricontatteremo per costruire un’esperienza coerente
-              con il tuo stile di viaggio.</p>
-              <div class="contact-info mt-4">
-                <p><i class="fa-solid fa-envelope"></i> info@meetamalficoast.pro</p>
-                <p><i class="fa-solid fa-phone"></i> +39 123 456 7890</p>
-                <p><i class="fa-solid fa-location-dot"></i> Amalfi Coast, Italy</p>
-              </div>
-            </div>
-            <div class="col-lg-7">
-              <form id="contactForm" class="luxury-form">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label" for="name">Name</label>
-                    <input class="form-control" id="name" name="name" type="text" autocomplete="name" required>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="email">Email</label>
-                    <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label" for="service">Experience</label>
-                    <select class="form-select" id="service" name="service" required>
-                      <option value="">Choose an experience</option>
-                      <option>Personal concierge</option>
-                      <option>Private tour</option>
-                      <option>Fine dining</option>
-                      <option>Luxury stay</option>
-                    </select>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label" for="message">Message</label>
-                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                  </div>
-                  <div class="col-12 text-end">
-                    <button class="btn btn-gold" type="submit">Send request</button>
-                  </div>
-                </div>
-              </form>
+
+            <p>
+              Raccontaci cosa vuoi vivere in Costiera Amalfitana.
+              Ti ricontatteremo per costruire un'esperienza coerente
+              con il tuo stile di viaggio.
+            </p>
+
+            <div class="contact-info mt-4">
+              <p>
+                <i class="fa-solid fa-envelope"></i>
+                info@meetamalficoast.pro
+              </p>
+
+              <p>
+                <i class="fa-solid fa-phone"></i>
+                +39 123 456 7890
+              </p>
+
+              <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Amalfi Coast, Italy
+              </p>
             </div>
           </div>
+
+          <div class="col-lg-7">
+
+
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="form-label" for="name">
+                  Name
+                </label>
+
+                <input class="form-control" id="name" type="text">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="email">
+                  Email
+                </label>
+
+                <input class="form-control" id="email" type="email">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="service">
+                  Experience
+                </label>
+
+                <select class="form-select" id="service">
+                  <option value="">Choose an experience</option>
+                  <option value="Personal concierge">Personal concierge</option>
+                  <option value="Private tour">Private tour</option>
+                  <option value="Fine dining">Fine dining</option>
+                  <option value="Luxury stay">Luxury stay</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="message">
+                  Message
+                </label>
+
+                <textarea class="form-control" id="message" rows="5"></textarea>
+              </div>
+
+              <div class="col-12 text-end">
+                <button id="btnSendRequest" class="btn btn-gold" type="button">
+                  Send request
+                </button>
+              </div>
+
+            </div>
+
+
+          </div>
+
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
