@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MeetAmalfiCoasts.Models;
@@ -12,15 +14,18 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IWebHostEnvironment _environment;
     private readonly SmtpSettings _smtp;
+    private readonly IConfiguration _configuration;
 
     public HomeController(
         ILogger<HomeController> logger,
         IWebHostEnvironment environment,
-        IOptions<SmtpSettings> smtp)
+        IOptions<SmtpSettings> smtp,
+        IConfiguration configuration)
     {
         _logger = logger;
         _environment = environment;
         _smtp = smtp.Value;
+        _configuration = configuration;
     }
 
     public IActionResult Index()
@@ -143,5 +148,81 @@ public class HomeController : Controller
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetGoogleReviews()
+    {
+        var apiKey = _configuration["GooglePlaces:ApiKey"];
+        var placeId = _configuration["GooglePlaces:PlaceId"];
+
+        if (string.IsNullOrWhiteSpace(apiKey) ||
+            string.IsNullOrWhiteSpace(placeId))
+        {
+            return Json(new GoogleReviewsViewModel());
+        }
+
+        using var client = new HttpClient();
+
+        client.DefaultRequestHeaders.Add("X-Goog-Api-Key", apiKey);
+        client.DefaultRequestHeaders.Add(
+            "X-Goog-FieldMask",
+            "displayName,rating,userRatingCount,reviews"
+        );
+
+        var response = await client.GetAsync(
+            $"https://places.googleapis.com/v1/places/{placeId}"
+        );
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return Json(new GoogleReviewsViewModel());
+        }
+
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        var model = new GoogleReviewsViewModel
+        {
+            Name = root.TryGetProperty("displayName", out var displayName) &&
+                   displayName.TryGetProperty("text", out var name)
+                ? name.GetString() ?? ""
+                : "",
+
+            Rating = root.TryGetProperty("rating", out var rating)
+                ? rating.GetDouble()
+                : 0,
+
+            UserRatingCount = root.TryGetProperty("userRatingCount", out var count)
+                ? count.GetInt32()
+                : 0
+        };
+
+        if (root.TryGetProperty("reviews", out var reviews))
+        {
+            foreach (var review in reviews.EnumerateArray())
+            {
+                model.Reviews.Add(new GoogleReviewViewModel
+                {
+                    Author = review.TryGetProperty("authorAttribution", out var author) &&
+                             author.TryGetProperty("displayName", out var authorName)
+                        ? authorName.GetString() ?? "Google user"
+                        : "Google user",
+
+                    Rating = review.TryGetProperty("rating", out var reviewRating)
+                        ? reviewRating.GetDouble()
+                        : 0,
+
+                    Text = review.TryGetProperty("text", out var text) &&
+                           text.TryGetProperty("text", out var reviewText)
+                        ? reviewText.GetString() ?? ""
+                        : ""
+                });
+            }
+        }
+
+        return Json(model);
     }
 }

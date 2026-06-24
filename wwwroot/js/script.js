@@ -247,3 +247,29 @@ $("#btnSendRequest").on("click", function () {
   });
 
 });
+
+// Metodo per caricare le recensioni di Google
+function loadGoogleReviewsSummary() {
+  $.get("/Home/GetGoogleReviews", function (data) {
+    const rating = data.rating || 0;
+    const reviewsCount = data.userRatingCount || 0;
+
+    $("#googleRating").text(rating.toFixed(1));
+    $("#googleReviewsCount").text(`Based on ${reviewsCount} Google Reviews`);
+
+    let stars = "";
+
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.round(rating))
+        stars += '<i class="fa-solid fa-star"></i>';
+      else
+        stars += '<i class="fa-regular fa-star"></i>';
+    }
+
+    $("#googleStars").html(stars);
+  });
+}
+
+$(document).ready(function () {
+  loadGoogleReviewsSummary();
+});
