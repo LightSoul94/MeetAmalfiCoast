@@ -2,75 +2,125 @@
   ViewData["Title"] = "Home Page";
 }
 
+@model MeetAmalfiCoasts.Models.HomeViewModel
+
 @section Scripts {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
 }
 
 <main id="home">
-    <section class="hero-section">
-      <div class="hero-overlay"></div>
-      <div class="container-fluid px-lg-5 hero-content">
-        <div class="row min-vh-100 align-items-center">
-          <div class="col-lg-6 col-xl-5">
-            <p class="eyebrow">Discover the Amalfi Coast</p>
-            <h1>Luxury Experience,<br>Timeless Memories</h1>
+  <section class="hero-section hero-carousel">
+
+    <div class="hero-slides">
+
+      @for (int i = 0; i < Model.HeroMedia.Count; i++)
+      {
+        var file = Model.HeroMedia[i];
+        var extension = System.IO.Path.GetExtension(file).ToLower();
+        var activeClass = i == 0 ? "active" : "";
+
+        <div class="hero-slide @activeClass">
+
+          @if (extension == ".mp4")
+          {
+            <video muted playsinline preload="metadata">
+              <source src="/images/hero/@file" type="video/mp4">
+            </video>
+          }
+          else
+          {
+            <div class="hero-slide-image" style="background-image: url('/images/hero/@file');">
+            </div>
+          }
+
+        </div>
+      }
+
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="container-fluid px-lg-5 hero-content">
+      <div class="row min-vh-100 align-items-center">
+        <div class="col-lg-6 col-xl-5">
+
+          <p class="eyebrow">Private Transfer Service</p>
+
+          <h1>
+            Travel in Comfort,<br>
+            Along the Amalfi Coast
+          </h1>
+
+          <div class="gold-separator my-4">
+            <span></span>
+          </div>
+
+          <p class="hero-text">
+            Private transfers from Naples, Amalfi, Positano, Ravello and Sorrento.
+            Professional driver, comfortable vehicles and real journeys with happy travelers.
+          </p>
+
+          <a href="/Planning" class="btn btn-gold mt-4">
+            Book your transfer
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="experiences" class="section-dark py-5">
+    <div class="container py-lg-4">
+      <div class="section-title text-center mb-5">
+        <p class="eyebrow mb-2">Tailored experiences just for you</p>
+        <div class="gold-separator justify-content-center"><span></span></div>
+      </div>
+
+      <div class="row g-4 experience-row">
+        <div class="col-md-6 col-lg-3">
+          <article class="experience-card">
+            <i class="fa-solid fa-bell-concierge"></i>
+            <h3>Personal Concierge</h3>
+            <p>Supporto dedicato per organizzare ogni momento del soggiorno.</p>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <article class="experience-card">
+            <i class="fa-solid fa-ship"></i>
+            <h3>Private Tours</h3>
+            <p>Tour privati in barca, transfer e itinerari esclusivi su misura.</p>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <article class="experience-card">
+            <i class="fa-solid fa-utensils"></i>
+            <h3>Fine Dining</h3>
+            <p>Ristoranti selezionati, esperienze gastronomiche e tavoli panoramici.</p>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <article class="experience-card">
+            <i class="fa-solid fa-bed"></i>
+            <h3>Luxury Stays</h3>
+            <p>Una selezione di strutture eleganti e proprietà esclusive.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="split-section">
+    <div class="container-fluid p-0">
+      <div class="row g-0 align-items-stretch">
+        <div class="col-lg-6 d-flex align-items-center">
+          <div class="split-content">
+            <p class="eyebrow">About us</p>
+            <h2>Your Gateway to the<br>Amalfi Coast</h2>
             <div class="gold-separator my-4"><span></span></div>
-            <p class="hero-text">Esperienze esclusive sulla Costiera Amalfitana, create intorno ai tuoi desideri. Ogni dettaglio è curato per trasformare il viaggio in un ricordo senza tempo.</p>
-            <a href="#experiences" class="btn btn-gold mt-4">Discover more</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="experiences" class="section-dark py-5">
-      <div class="container py-lg-4">
-        <div class="section-title text-center mb-5">
-          <p class="eyebrow mb-2">Tailored experiences just for you</p>
-          <div class="gold-separator justify-content-center"><span></span></div>
-        </div>
-
-        <div class="row g-4 experience-row">
-          <div class="col-md-6 col-lg-3">
-            <article class="experience-card">
-              <i class="fa-solid fa-bell-concierge"></i>
-              <h3>Personal Concierge</h3>
-              <p>Supporto dedicato per organizzare ogni momento del soggiorno.</p>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <article class="experience-card">
-              <i class="fa-solid fa-ship"></i>
-              <h3>Private Tours</h3>
-              <p>Tour privati in barca, transfer e itinerari esclusivi su misura.</p>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <article class="experience-card">
-              <i class="fa-solid fa-utensils"></i>
-              <h3>Fine Dining</h3>
-              <p>Ristoranti selezionati, esperienze gastronomiche e tavoli panoramici.</p>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <article class="experience-card">
-              <i class="fa-solid fa-bed"></i>
-              <h3>Luxury Stays</h3>
-              <p>Una selezione di strutture eleganti e proprietà esclusive.</p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="split-section">
-      <div class="container-fluid p-0">
-        <div class="row g-0 align-items-stretch">
-          <div class="col-lg-6 d-flex align-items-center">
-            <div class="split-content">
-              <p class="eyebrow">About us</p>
-              <h2>Your Gateway to the<br>Amalfi Coast</h2>
-              <div class="gold-separator my-4"><span></span></div>
-              <p>Meet Amalfi Coast Pro trasforma il viaggio in un’esperienza elegante, personale e senza stress. Dalla prima richiesta fino all’ultimo trasferimento, ogni servizio viene coordinato con precisione.</p>
+            <p>Meet Amalfi Coast Pro trasforma il viaggio in un’esperienza elegante, personale e senza stress. Dalla
+              prima richiesta fino all’ultimo trasferimento, ogni servizio viene coordinato con precisione.</p>
               <a href="#contact" class="btn btn-outline-gold mt-4">Learn more</a>
             </div>
           </div>
@@ -91,22 +141,30 @@
         <div class="row g-4">
           <div class="col-md-6 col-lg-3">
             <article class="destination-card destination-positano">
-              <div><h3>Positano</h3><a href="#contact">Explore</a></div>
+              <div>
+                <h3>Positano</h3><a href="#contact">Explore</a>
+              </div>
             </article>
           </div>
           <div class="col-md-6 col-lg-3">
             <article class="destination-card destination-capri">
-              <div><h3>Capri</h3><a href="#contact">Explore</a></div>
+              <div>
+                <h3>Capri</h3><a href="#contact">Explore</a>
+              </div>
             </article>
           </div>
           <div class="col-md-6 col-lg-3">
             <article class="destination-card destination-ravello">
-              <div><h3>Ravello</h3><a href="#contact">Explore</a></div>
+              <div>
+                <h3>Ravello</h3><a href="#contact">Explore</a>
+              </div>
             </article>
           </div>
           <div class="col-md-6 col-lg-3">
             <article class="destination-card destination-amalfi">
-              <div><h3>Amalfi</h3><a href="#contact">Explore</a></div>
+              <div>
+                <h3>Amalfi</h3><a href="#contact">Explore</a>
+              </div>
             </article>
           </div>
         </div>
@@ -119,45 +177,46 @@
           <div class="col-lg-5">
             <p class="eyebrow">Stay inspired</p>
             <h2>Plan your exclusive experience</h2>
-            <p>Raccontaci cosa vuoi vivere in Costiera Amalfitana. Ti ricontatteremo per costruire un’esperienza coerente con il tuo stile di viaggio.</p>
-            <div class="contact-info mt-4">
-              <p><i class="fa-solid fa-envelope"></i> info@meetamalficoast.pro</p>
-              <p><i class="fa-solid fa-phone"></i> +39 123 456 7890</p>
-              <p><i class="fa-solid fa-location-dot"></i> Amalfi Coast, Italy</p>
+            <p>Raccontaci cosa vuoi vivere in Costiera Amalfitana. Ti ricontatteremo per costruire un’esperienza coerente
+              con il tuo stile di viaggio.</p>
+              <div class="contact-info mt-4">
+                <p><i class="fa-solid fa-envelope"></i> info@meetamalficoast.pro</p>
+                <p><i class="fa-solid fa-phone"></i> +39 123 456 7890</p>
+                <p><i class="fa-solid fa-location-dot"></i> Amalfi Coast, Italy</p>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <form id="contactForm" class="luxury-form">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label" for="name">Name</label>
+                    <input class="form-control" id="name" name="name" type="text" autocomplete="name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="email">Email</label>
+                    <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="service">Experience</label>
+                    <select class="form-select" id="service" name="service" required>
+                      <option value="">Choose an experience</option>
+                      <option>Personal concierge</option>
+                      <option>Private tour</option>
+                      <option>Fine dining</option>
+                      <option>Luxury stay</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="message">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                  </div>
+                  <div class="col-12 text-end">
+                    <button class="btn btn-gold" type="submit">Send request</button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-          <div class="col-lg-7">
-            <form id="contactForm" class="luxury-form">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label" for="name">Name</label>
-                  <input class="form-control" id="name" name="name" type="text" autocomplete="name" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="email">Email</label>
-                  <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="service">Experience</label>
-                  <select class="form-select" id="service" name="service" required>
-                    <option value="">Choose an experience</option>
-                    <option>Personal concierge</option>
-                    <option>Private tour</option>
-                    <option>Fine dining</option>
-                    <option>Luxury stay</option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="message">Message</label>
-                  <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                </div>
-                <div class="col-12 text-end">
-                  <button class="btn btn-gold" type="submit">Send request</button>
-                </div>
-              </div>
-            </form>
-          </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>

@@ -2,6 +2,8 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+// Funzione per gestire lo scroll della pagina e modificare la classe dell'header
 $(function () {
     $(window).on('scroll', function () {
       const scrolled = $(this).scrollTop() > 40;
@@ -29,3 +31,62 @@ $(function () {
       this.reset();
     });
   });
+
+  // Metodo per lo slider dell'hero
+$(document).ready(function () {
+  initHeroCarousel();
+});
+
+function initHeroCarousel() {
+  const slides = $(".hero-slide");
+
+  if (slides.length <= 1)
+    return;
+
+  let currentIndex = 0;
+
+  function showNextSlide() {
+    const currentSlide = slides.eq(currentIndex);
+    const currentVideo = currentSlide.find("video").get(0);
+
+    currentSlide.removeClass("active");
+
+    if (currentVideo) {
+      currentVideo.pause();
+      currentVideo.currentTime = 0;
+    }
+
+    currentIndex++;
+
+    if (currentIndex >= slides.length)
+      currentIndex = 0;
+
+    const nextSlide = slides.eq(currentIndex);
+    const nextVideo = nextSlide.find("video").get(0);
+
+    nextSlide.addClass("active");
+
+    if (nextVideo) {
+      nextVideo.currentTime = 0;
+      nextVideo.play();
+
+      nextVideo.onended = function () {
+        showNextSlide();
+      };
+    } else {
+      setTimeout(showNextSlide, 6000);
+    }
+  }
+
+  const firstVideo = slides.eq(0).find("video").get(0);
+
+  if (firstVideo) {
+    firstVideo.play();
+
+    firstVideo.onended = function () {
+      showNextSlide();
+    };
+  } else {
+    setTimeout(showNextSlide, 6000);
+  }
+}
