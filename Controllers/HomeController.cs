@@ -83,24 +83,24 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-public async Task<IActionResult> SendContactRequest([FromBody] ContactRequestModel model)
-{
-	if (model == null ||
-		string.IsNullOrWhiteSpace(model.Name) ||
-		string.IsNullOrWhiteSpace(model.Email) ||
-		string.IsNullOrWhiteSpace(model.Service) ||
-		string.IsNullOrWhiteSpace(model.Message))
-	{
-		return Json(new
-		{
-			success = false,
-			message = "Please fill in all required fields."
-		});
-	}
+    public async Task<IActionResult> SendContactRequest([FromBody] ContactRequestModel model)
+    {
+        if (model == null ||
+            string.IsNullOrWhiteSpace(model.Name) ||
+            string.IsNullOrWhiteSpace(model.Email) ||
+            string.IsNullOrWhiteSpace(model.Service) ||
+            string.IsNullOrWhiteSpace(model.Message))
+        {
+            return Json(new
+            {
+                success = false,
+                message = "Please fill in all required fields."
+            });
+        }
 
-	try
-	{
-		var body = $@"
+        try
+        {
+            var body = $@"
 		<h2>New Meet Amalfi Coast request</h2>
 
 		<p><strong>Name:</strong> {WebUtility.HtmlEncode(model.Name)}</p>
@@ -111,46 +111,45 @@ public async Task<IActionResult> SendContactRequest([FromBody] ContactRequestMod
 		<p>{WebUtility.HtmlEncode(model.Message).Replace("\n", "<br>")}</p>
 	";
 
-		using var message = new MailMessage();
+            using var message = new MailMessage();
 
-		message.From = new MailAddress(_smtp.From);
-		message.To.Add(_smtp.To);
-		message.ReplyToList.Add(new MailAddress(model.Email));
+            message.From = new MailAddress(_smtp.From);
+            message.To.Add(_smtp.To);
+            message.ReplyToList.Add(new MailAddress(model.Email));
 
-		message.Subject = $"Meet Amalfi Coast - {model.Name}";
-		message.Body = body;
-		message.IsBodyHtml = true;
+            message.Subject = $"Meet Amalfi Coast - {model.Name}";
+            message.Body = body;
+            message.IsBodyHtml = true;
 
-		using var client = new SmtpClient(_smtp.Host, _smtp.Port)
-		{
-			EnableSsl = _smtp.EnableSsl,
-			Credentials = new NetworkCredential(
-				_smtp.Username,
-				_smtp.Password
-			)
-		};
+            using var client = new SmtpClient(_smtp.Host, _smtp.Port)
+            {
+                EnableSsl = _smtp.EnableSsl,
+                Credentials = new NetworkCredential(
+                    _smtp.Username,
+                    _smtp.Password
+                )
+            };
 
-		await client.SendMailAsync(message);
+            await client.SendMailAsync(message);
 
-		return Json(new
-		{
-			success = true
-		});
-	}
-	catch (Exception ex)
-	{
-		_logger.LogError(ex, "Errore invio mail contatto");
+            return Json(new
+            {
+                success = true
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore invio mail contatto");
 
-		return Json(new
-		{
-			success = false,
-			message = ex.Message,
-			detail = ex.InnerException?.Message
-		});
-	}
-}
+            return Json(new
+            {
+                success = false,
+                message = "Unable to send your request. Please try again later."
+            });
+        }
+    }
 
-[HttpGet]
+    [HttpGet]
     public async Task<IActionResult> GetGoogleReviews()
     {
         var apiKey = _configuration["GooglePlaces:ApiKey"];
