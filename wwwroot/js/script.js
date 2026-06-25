@@ -112,23 +112,6 @@ $(function () {
   } else if (window.location.pathname === "/") {
     updateActiveSection();
   }
-
-  $("#contactForm").on("submit", function (event) {
-    event.preventDefault();
-
-    Swal.fire({
-      icon: "success",
-      title: "Request sent",
-      text: "Thank you. We will contact you soon to plan your Amalfi Coast experience.",
-      confirmButtonText: "Perfect",
-      background: "#0d0d0d",
-      color: "#f7f2e8",
-      confirmButtonColor: "#d6ad61"
-    });
-
-    this.reset();
-  });
-
 });
 
 // Metodo per lo slider dell'hero
@@ -193,6 +176,10 @@ function initHeroCarousel() {
 // Metodo per invio del form di contatto con SweetAlert2 e Ajax
 $("#btnSendRequest").on("click", function () {
 
+  const button = $("#btnSendRequest");
+  button.prop("disabled", true);
+  button.text("Sending...");
+
   const data = {
     Name: $("#name").val().trim(),
     Email: $("#email").val().trim(),
@@ -243,6 +230,11 @@ $("#btnSendRequest").on("click", function () {
         title: "Server error",
         text: "Unable to send your request."
       });
+    },
+    
+    complete: function () {
+        button.prop("disabled", false);
+        button.text("Send request");
     }
   });
 

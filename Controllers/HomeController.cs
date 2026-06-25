@@ -135,8 +135,7 @@ public class HomeController : Controller
             return Json(new
             {
                 success = false,
-                message = ex.Message,
-                detail = ex.InnerException?.Message
+                message = "Unable to send your request. Please try again later."
             });
         }
     }
