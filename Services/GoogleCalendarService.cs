@@ -9,22 +9,27 @@ using Microsoft.Extensions.Options;
 public class GoogleCalendarService
 {
     private readonly GoogleCalendarSettings _settings;
-    private readonly string _tokenFilePath;
-    public string WebhookUrl { get; set; } = string.Empty;
+    private readonly FirestorePlanningService _firestorePlanningService;
+    private readonly ILogger<GoogleCalendarService> _logger;
 
-    public GoogleCalendarService(IOptions<GoogleCalendarSettings> settings)
+    private readonly string _tokenFilePath;
+    private readonly string _syncTokenFilePath;
+
+    public GoogleCalendarService(
+        IOptions<GoogleCalendarSettings> settings,
+        FirestorePlanningService firestorePlanningService,
+        ILogger<GoogleCalendarService> logger)
     {
         _settings = settings.Value;
+        _firestorePlanningService = firestorePlanningService;
+        _logger = logger;
+
         _tokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-token.json");
+        _syncTokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-sync-token.txt");
     }
 
     public string GetAuthorizationUrl()
     {
-        // Console.WriteLine("=================================");
-        // Console.WriteLine("REDIRECT URI: " + _settings.RedirectUri);
-        // Console.WriteLine("CLIENT ID: " + _settings.ClientId);
-        // Console.WriteLine("=================================");
-
         return "https://accounts.google.com/o/oauth2/v2/auth" +
                "?client_id=" + Uri.EscapeDataString(_settings.ClientId) +
                "&redirect_uri=" + Uri.EscapeDataString(_settings.RedirectUri) +
@@ -48,6 +53,11 @@ public class GoogleCalendarService
         string json = System.Text.Json.JsonSerializer.Serialize(token);
 
         await File.WriteAllTextAsync(_tokenFilePath, json);
+
+        if (File.Exists(_syncTokenFilePath))
+        {
+            File.Delete(_syncTokenFilePath);
+        }
     }
 
     public async Task<string> CreateEventAsync(PlanningAppointment appointment)
@@ -82,9 +92,116 @@ public class GoogleCalendarService
         return createdEvent.Id;
     }
 
-    public Task SyncDeletedOrChangedEventsAsync()
+    public async Task SyncGoogleToFirestoreAsync()
     {
-        return Task.CompletedTask;
+        var changedEvents = await GetChangedEventsAsync();
+
+        if (changedEvents.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var googleEvent in changedEvents)
+        {
+            if (string.IsNullOrWhiteSpace(googleEvent.Id))
+            {
+                continue;
+            }
+
+            if (googleEvent.Status == "cancelled")
+            {
+                await _firestorePlanningService.DeleteAppointmentByGoogleEventIdAsync(
+                    googleEvent.Id
+                );
+
+                _logger.LogInformation(
+                    "Evento eliminato da Firestore. GoogleEventId: {GoogleEventId}",
+                    googleEvent.Id
+                );
+
+                continue;
+            }
+
+            DateTime? startDateTime = googleEvent.Start?.DateTimeDateTimeOffset?.DateTime;
+            DateTime? endDateTime = googleEvent.End?.DateTimeDateTimeOffset?.DateTime;
+
+            if (startDateTime == null || endDateTime == null)
+            {
+                continue;
+            }
+
+            await _firestorePlanningService.UpsertAppointmentFromGoogleAsync(
+                googleEventId: googleEvent.Id,
+                title: googleEvent.Summary ?? "Appuntamento",
+                startDateTime: startDateTime.Value,
+                endDateTime: endDateTime.Value
+            );
+
+            _logger.LogInformation(
+                "Evento aggiornato da Google Calendar verso Firestore. GoogleEventId: {GoogleEventId}",
+                googleEvent.Id
+            );
+        }
+    }
+
+    public async Task<List<Event>> GetChangedEventsAsync()
+    {
+        CalendarService service = await CreateCalendarServiceAsync();
+
+        if (!File.Exists(_syncTokenFilePath))
+        {
+            await EnsureSyncTokenAsync(service);
+            return new List<Event>();
+        }
+
+        string syncToken = await File.ReadAllTextAsync(_syncTokenFilePath);
+
+        EventsResource.ListRequest request = service.Events.List("primary");
+        request.SyncToken = syncToken;
+        request.ShowDeleted = true;
+
+        try
+        {
+            Events events = await request.ExecuteAsync();
+
+            if (!string.IsNullOrWhiteSpace(events.NextSyncToken))
+            {
+                await File.WriteAllTextAsync(_syncTokenFilePath, events.NextSyncToken);
+            }
+
+            return events.Items?.ToList() ?? new List<Event>();
+        }
+        catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.Gone)
+        {
+            if (File.Exists(_syncTokenFilePath))
+            {
+                File.Delete(_syncTokenFilePath);
+            }
+
+            await EnsureSyncTokenAsync(service);
+
+            return new List<Event>();
+        }
+    }
+
+    private async Task EnsureSyncTokenAsync(CalendarService service)
+    {
+        if (File.Exists(_syncTokenFilePath))
+        {
+            return;
+        }
+
+        EventsResource.ListRequest request = service.Events.List("primary");
+        request.ShowDeleted = true;
+        request.SingleEvents = true;
+        request.MaxResults = 2500;
+
+        Events events = await request.ExecuteAsync();
+
+        if (!string.IsNullOrWhiteSpace(events.NextSyncToken))
+        {
+            await File.WriteAllTextAsync(_syncTokenFilePath, events.NextSyncToken);
+        }
     }
 
     private GoogleAuthorizationCodeFlow CreateAuthorizationFlow()
@@ -140,65 +257,74 @@ public class GoogleCalendarService
         return new CalendarService(new BaseClientService.Initializer
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Meet Amalfi Coast"
+            ApplicationName = "Meet Amalfi Coasts"
         });
     }
 
-    public async Task<string> StartWatchAsync()
+    public async Task<List<Event>> GetFutureEventsAsync()
     {
         CalendarService service = await CreateCalendarServiceAsync();
-
-        await EnsureSyncTokenAsync(service);
-
-        string channelId = Guid.NewGuid().ToString();
-
-        Channel channel = new Channel
-        {
-            Id = channelId,
-            Type = "web_hook",
-            Address = _settings.WebhookUrl
-        };
-
-        Channel result = await service.Events.Watch(channel, "primary").ExecuteAsync();
-
-        return result.Id;
-    }
-
-    public async Task<List<Event>> GetChangedEventsAsync()
-    {
-        CalendarService service = await CreateCalendarServiceAsync();
-
-        string syncTokenPath = GetSyncTokenPath();
-
-        if (!File.Exists(syncTokenPath))
-        {
-            await EnsureSyncTokenAsync(service);
-            return new List<Event>();
-        }
-
-        string syncToken = await File.ReadAllTextAsync(syncTokenPath);
 
         EventsResource.ListRequest request = service.Events.List("primary");
-        request.SyncToken = syncToken;
-        request.ShowDeleted = true;
+
+        request.TimeMinDateTimeOffset = DateTimeOffset.Now;
+        request.ShowDeleted = false;
+        request.SingleEvents = true;
+        request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+        request.MaxResults = 2500;
 
         Events events = await request.ExecuteAsync();
-
-        if (!string.IsNullOrWhiteSpace(events.NextSyncToken))
-        {
-            await File.WriteAllTextAsync(syncTokenPath, events.NextSyncToken);
-        }
 
         return events.Items?.ToList() ?? new List<Event>();
     }
 
-    private async Task EnsureSyncTokenAsync(CalendarService service)
+    public async Task ResetPlanningFromGoogleCalendarAsync()
     {
-        string syncTokenPath = GetSyncTokenPath();
+        CalendarService service = await CreateCalendarServiceAsync();
 
-        if (File.Exists(syncTokenPath))
+        EventsResource.ListRequest request = service.Events.List("primary");
+
+        request.TimeMinDateTimeOffset = DateTimeOffset.Now;
+        request.ShowDeleted = false;
+        request.SingleEvents = true;
+        request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+        request.MaxResults = 2500;
+
+        Events events = await request.ExecuteAsync();
+
+        await _firestorePlanningService.ClearAllAppointmentsAsync();
+
+        foreach (Event googleEvent in events.Items ?? new List<Event>())
         {
-            return;
+            if (string.IsNullOrWhiteSpace(googleEvent.Id))
+            {
+                continue;
+            }
+
+            DateTime? startDateTime = googleEvent.Start?.DateTimeDateTimeOffset?.DateTime;
+            DateTime? endDateTime = googleEvent.End?.DateTimeDateTimeOffset?.DateTime;
+
+            if (startDateTime == null || endDateTime == null)
+            {
+                continue;
+            }
+
+            await _firestorePlanningService.UpsertAppointmentFromGoogleAsync(
+                googleEventId: googleEvent.Id,
+                title: googleEvent.Summary ?? "Appuntamento",
+                startDateTime: startDateTime.Value,
+                endDateTime: endDateTime.Value
+            );
+        }
+
+        await ResetSyncTokenAsync(service);
+    }
+
+    private async Task ResetSyncTokenAsync(CalendarService service)
+    {
+        if (File.Exists(_syncTokenFilePath))
+        {
+            File.Delete(_syncTokenFilePath);
         }
 
         EventsResource.ListRequest request = service.Events.List("primary");
@@ -210,12 +336,7 @@ public class GoogleCalendarService
 
         if (!string.IsNullOrWhiteSpace(events.NextSyncToken))
         {
-            await File.WriteAllTextAsync(syncTokenPath, events.NextSyncToken);
+            await File.WriteAllTextAsync(_syncTokenFilePath, events.NextSyncToken);
         }
-    }
-
-    private string GetSyncTokenPath()
-    {
-        return Path.Combine(AppContext.BaseDirectory, "google-calendar-sync-token.txt");
     }
 }

@@ -1,34 +1,21 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
-/// <summary>
-/// Servizio per la gestione degli appuntamenti di planning tramite Firestore
-/// Gestisce le operazioni CRUD e la sincronizzazione con Google Calendar
-/// </summary>
 public class FirestorePlanningService
 {
-    // Istanza del database Firestore per le operazioni
     private readonly FirestoreDb _db;
 
-    /// <summary>
-    /// Costruttore che inizializza la connessione a Firestore
-    /// Legge le credenziali da firebase-service-account.json
-    /// </summary>
     public FirestorePlanningService(IWebHostEnvironment environment)
     {
-        // Costruisce il percorso del file delle credenziali
         string credentialPath = Path.Combine(
             environment.ContentRootPath,
             "firebase-service-account.json"
         );
 
-        // Imposta la variabile d'ambiente per le credenziali di Google
-        // TODO: Sostituire con CredentialFactory quando Google stabilizzerà le API.
-        #pragma warning disable CS0618
+#pragma warning disable CS0618
         GoogleCredential credential = GoogleCredential.FromFile(credentialPath);
-        #pragma warning restore CS0618
+#pragma warning restore CS0618
 
-        // Crea un'istanza di FirestoreDb
         _db = new FirestoreDbBuilder
         {
             ProjectId = "test-909e7",
@@ -36,26 +23,17 @@ public class FirestorePlanningService
         }.Build();
     }
 
-    /// <summary>
-    /// Recupera tutti gli appuntamenti in sospeso dalla raccolta Firestore
-    /// Gli appuntamenti sono quelli con syncStatus = "pending"
-    /// </summary>
     public async Task<List<PlanningAppointment>> GetPendingAppointmentsAsync()
     {
-        // Crea una query per recuperare gli appuntamenti in sospeso
         Query query = _db.Collection("appointments")
             .WhereEqualTo("syncStatus", "pending");
 
-        // Esegue la query e ottiene i risultati
         QuerySnapshot snapshot = await query.GetSnapshotAsync();
 
-        // Inizializza la lista degli appuntamenti
         List<PlanningAppointment> appointments = new();
 
-        // Elabora ogni documento dal database
         foreach (DocumentSnapshot doc in snapshot.Documents)
         {
-            // Converte il documento Firestore in un dizionario
             Dictionary<string, object> data = doc.ToDictionary();
 
             appointments.Add(new PlanningAppointment
@@ -65,7 +43,11 @@ public class FirestorePlanningService
                 Start = data.GetValueOrDefault("start")?.ToString() ?? "",
                 End = data.GetValueOrDefault("end")?.ToString() ?? "",
                 Title = data.GetValueOrDefault("title")?.ToString() ?? "",
-                Customer = data.GetValueOrDefault("customer")?.ToString() ?? "",
+
+                Customer = data.GetValueOrDefault("customerName")?.ToString()
+                           ?? data.GetValueOrDefault("customer")?.ToString()
+                           ?? "",
+
                 CustomerEmail = data.GetValueOrDefault("customerEmail")?.ToString() ?? "",
                 GoogleEventId = data.GetValueOrDefault("googleEventId")?.ToString(),
                 GoogleCalendarId = data.GetValueOrDefault("googleCalendarId")?.ToString(),
@@ -78,41 +60,34 @@ public class FirestorePlanningService
         return appointments;
     }
 
-    /// <summary>
-    /// Marca un appuntamento come sincronizzato con Google Calendar
-    /// Aggiorna lo stato e salva i dati di sincronizzazione
-    /// </summary>
-    public async Task MarkAsSyncedAsync(string appointmentId, string googleEventId, string calendarId)
+    public async Task MarkAsSyncedAsync(
+        string appointmentId,
+        string googleEventId,
+        string calendarId)
     {
-        // Ottiene il riferimento al documento dell'appuntamento
         DocumentReference docRef = _db.Collection("appointments").Document(appointmentId);
 
-        // Aggiorna i campi del documento per marcare la sincronizzazione completata
         await docRef.UpdateAsync(new Dictionary<string, object?>
         {
-            { "googleEventId", googleEventId },      // ID dell'evento Google Calendar
-            { "googleCalendarId", calendarId },      // ID del calendario Google
-            { "syncStatus", "synced" },              // Stato: sincronizzato
-            { "syncError", null },                   // Cancella gli errori precedenti
-            { "source", "google" },                  // Sorgente: Google Calendar
-            { "syncedAt", Timestamp.GetCurrentTimestamp() }  // Timestamp della sincronizzazione
+            { "googleEventId", googleEventId },
+            { "googleCalendarId", calendarId },
+            { "syncStatus", "synced" },
+            { "syncError", null },
+            { "source", "website" },
+            { "syncedAt", Timestamp.GetCurrentTimestamp() },
+            { "updatedAt", Timestamp.GetCurrentTimestamp() }
         });
     }
 
-    /// <summary>
-    /// Marca un appuntamento con stato di errore durante la sincronizzazione
-    /// Salva il messaggio di errore per il debug
-    /// </summary>
     public async Task MarkAsErrorAsync(string appointmentId, string errorMessage)
     {
-        // Ottiene il riferimento al documento dell'appuntamento
         DocumentReference docRef = _db.Collection("appointments").Document(appointmentId);
 
-        // Aggiorna i campi per indicare un errore di sincronizzazione
         await docRef.UpdateAsync(new Dictionary<string, object>
         {
-            { "syncStatus", "error" },           // Stato: errore
-            { "syncError", errorMessage }        // Messaggio di errore per il debug
+            { "syncStatus", "error" },
+            { "syncError", errorMessage },
+            { "updatedAt", Timestamp.GetCurrentTimestamp() }
         });
     }
 
@@ -126,6 +101,122 @@ public class FirestorePlanningService
         foreach (DocumentSnapshot doc in snapshot.Documents)
         {
             await doc.Reference.DeleteAsync();
+        }
+    }
+
+    public async Task UpdateAppointmentFromGoogleAsync(
+        string googleEventId,
+        string title,
+        DateTime startDateTime,
+        DateTime endDateTime)
+    {
+        Query query = _db.Collection("appointments")
+            .WhereEqualTo("googleEventId", googleEventId)
+            .Limit(1);
+
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+
+        if (snapshot.Documents.Count == 0)
+        {
+            return;
+        }
+
+        DocumentSnapshot doc = snapshot.Documents[0];
+
+        string isoDate = startDateTime.ToString("yyyy-MM-dd");
+        string start = startDateTime.ToString("HH:mm");
+        string end = endDateTime.ToString("HH:mm");
+
+        await doc.Reference.UpdateAsync(new Dictionary<string, object?>
+        {
+            { "title", title },
+            { "isoDate", isoDate },
+            { "start", start },
+            { "end", end },
+            { "syncStatus", "synced" },
+            { "syncError", null },
+            { "source", "google" },
+            { "lastModifiedBy", "google" },
+            { "updatedAt", Timestamp.GetCurrentTimestamp() }
+        });
+    }
+
+    public async Task UpsertAppointmentFromGoogleAsync(
+    string googleEventId,
+    string title,
+    DateTime startDateTime,
+    DateTime endDateTime)
+    {
+        Query query = _db.Collection("appointments")
+            .WhereEqualTo("googleEventId", googleEventId)
+            .Limit(1);
+
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+
+        string isoDate = startDateTime.ToString("yyyy-MM-dd");
+        string start = startDateTime.ToString("HH:mm");
+        string end = endDateTime.ToString("HH:mm");
+
+        Dictionary<string, object?> data = new()
+    {
+        { "title", title },
+        { "isoDate", isoDate },
+        { "start", start },
+        { "end", end },
+        { "googleEventId", googleEventId },
+        { "googleCalendarId", "primary" },
+        { "syncStatus", "synced" },
+        { "syncError", null },
+        { "source", "google" },
+        { "lastModifiedBy", "google" },
+        { "updatedAt", Timestamp.GetCurrentTimestamp() }
+    };
+
+        if (snapshot.Documents.Count > 0)
+        {
+            await snapshot.Documents[0].Reference.UpdateAsync(data);
+            return;
+        }
+
+        data.Add("customerName", "Google Calendar");
+        data.Add("customerEmail", "");
+        data.Add("customerPhone", "");
+        data.Add("pickupAddress", "");
+        data.Add("dropoffAddress", "");
+        data.Add("notes", "");
+        data.Add("status", "confirmed");
+        data.Add("createdAt", Timestamp.GetCurrentTimestamp());
+        data.Add("lastModifiedAt", Timestamp.GetCurrentTimestamp());
+
+        await _db.Collection("appointments").AddAsync(data);
+    }
+
+    public async Task ClearAllAppointmentsAsync()
+    {
+        CollectionReference collection = _db.Collection("appointments");
+
+        QuerySnapshot snapshot = await collection.GetSnapshotAsync();
+
+        WriteBatch batch = _db.StartBatch();
+
+        int counter = 0;
+
+        foreach (DocumentSnapshot doc in snapshot.Documents)
+        {
+            batch.Delete(doc.Reference);
+            counter++;
+
+            if (counter == 450)
+            {
+                await batch.CommitAsync();
+                batch = _db.StartBatch();
+                counter = 0;
+            }
+        }
+
+        if (counter > 0)
+        {
+            await batch.CommitAsync();
         }
     }
 }
