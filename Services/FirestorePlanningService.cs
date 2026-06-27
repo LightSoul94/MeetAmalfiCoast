@@ -219,4 +219,51 @@ public class FirestorePlanningService
             await batch.CommitAsync();
         }
     }
+
+    public async Task<string> CreatePaidAppointmentAsync(
+    PlanningAppointment appointment,
+    string stripeSessionId,
+    long depositAmount,
+    string currency)
+    {
+        Dictionary<string, object?> data = new()
+    {
+        { "title", appointment.Title },
+        { "customerName", appointment.Customer },
+        { "customerEmail", appointment.CustomerEmail },
+        { "customerPhone", "" },
+
+        { "pickupAddress", "" },
+        { "dropoffAddress", "" },
+
+        { "isoDate", appointment.IsoDate },
+        { "start", appointment.Start },
+        { "end", appointment.End },
+
+        { "notes", "" },
+        { "status", "confirmed" },
+
+        { "paymentStatus", "paid" },
+        { "paymentType", "deposit" },
+        { "depositAmount", depositAmount },
+        { "currency", currency },
+        { "stripeSessionId", stripeSessionId },
+
+        { "googleEventId", null },
+        { "googleCalendarId", null },
+        { "syncStatus", "pending" },
+        { "syncError", null },
+
+        { "source", "website" },
+        { "lastModifiedBy", "website" },
+
+        { "createdAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() },
+        { "updatedAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() },
+        { "lastModifiedAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() }
+    };
+
+        var doc = await _db.Collection("appointments").AddAsync(data);
+
+        return doc.Id;
+    }
 }

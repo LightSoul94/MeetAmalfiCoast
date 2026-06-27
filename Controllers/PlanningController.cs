@@ -7,15 +7,18 @@ public class PlanningController : Controller
     private readonly GoogleCalendarService _googleCalendarService;
     private readonly FirestorePlanningService _firestorePlanningService;
     private readonly ILogger<PlanningController> _logger;
+    private readonly StripeService _stripeService;
 
     public PlanningController(
         GoogleCalendarService googleCalendarService,
         FirestorePlanningService firestorePlanningService,
-        ILogger<PlanningController> logger)
+        ILogger<PlanningController> logger,
+        StripeService stripeService)
     {
         _googleCalendarService = googleCalendarService;
         _firestorePlanningService = firestorePlanningService;
         _logger = logger;
+        _stripeService = stripeService;
     }
 
     [HttpGet]
@@ -99,6 +102,59 @@ public class PlanningController : Controller
             _logger.LogError(ex, "Errore reset planning da Google Calendar");
 
             return Content("Errore reset planning: " + ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointment appointment)
+    {
+        try
+        {
+            var result = await _stripeService.CreateCheckoutSessionAsync(
+                appointment,
+                Request
+            );
+
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante la creazione della sessione di checkout Stripe");
+
+            return Json(new
+            {
+                success = false,
+                message = "Errore durante la creazione della sessione di checkout."
+            });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> StripeWebhook()
+    {
+        try
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+            var stripeEvent = _stripeService.ConstructEventFromWebhook(
+                json,
+                Request.Headers["Stripe-Signature"].ToString()
+            );
+
+            if (stripeEvent == null)
+            {
+                return BadRequest();
+            }
+
+            await _stripeService.HandleStripeEventAsync(stripeEvent);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante la gestione del webhook Stripe");
+
+            return BadRequest();
         }
     }
 }
