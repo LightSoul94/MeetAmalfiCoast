@@ -27,7 +27,18 @@ const PlanningService = (function () {
 
   return {
     listenAppointmentsByRange,
-    createAppointment
+    createAppointment,
+    createCheckoutSession
   };
 
 })();
+
+
+function createCheckoutSession(appointment) {
+    return $.ajax({
+      url: "/Planning/CreateCheckoutSession",
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(appointment)
+    });
+  }

@@ -267,7 +267,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
     // </div>
     // `,
     showCancelButton: true,
-    confirmButtonText: "Crea appuntamento",
+    confirmButtonText: "Paga acconto e prenota",
     cancelButtonText: "Annulla",
     didOpen: () => {
       $("#swal-date").datepicker({
@@ -311,16 +311,48 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
       };
     }
   }).then((result) => {
-    if (result.isConfirmed) {
-      PlanningService.createAppointment(result.value);
+    if (!result.isConfirmed)
+      return;
 
-      Swal.fire({
-        icon: "success",
-        title: "Appuntamento creato",
-        timer: 1200,
-        showConfirmButton: false
+    Swal.fire({
+      title: "Reindirizzamento al pagamento",
+      text: "Verrai portato alla pagina sicura per pagare l'acconto.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    PlanningService.createCheckoutSession(result.value)
+      .then(function (response) {
+        if (!response || !response.success || !response.checkoutUrl) {
+          Swal.fire({
+            icon: "error",
+            title: "Errore",
+            text: response?.message || "Impossibile avviare il pagamento."
+          });
+
+          return;
+        }
+
+        window.location.href = response.checkoutUrl;
+      })
+      .catch(function () {
+        Swal.fire({
+          icon: "error",
+          title: "Errore pagamento",
+          text: "Non è stato possibile avviare il pagamento dell'acconto."
+        });
       });
-    }
+  });
+}
+
+function createCheckoutSession(appointment) {
+  return $.ajax({
+    url: "/Planning/CreateCheckoutSession",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(appointment)
   });
 }
 
