@@ -387,20 +387,16 @@ function createAppointment(app) {
       top: `${top}px`,
       height: `${height}px`
     })
-    .append($("<strong>").text(app.title))
-    .append($("<span>").text(app.customerName))
+    .append($("<strong>").text(app.title || "Reserved"))
+    .append($("<span>").text("Reserved"))
     .append($("<span>").text(`${app.start} - ${app.end}`));
 
   appointment.on("click", function (e) {
     e.stopPropagation();
 
     Swal.fire({
-      title: app.title,
-      html: `
-                <strong>Cliente:</strong> ${app.customerName}<br>
-                <strong>Email:</strong> ${app.customerEmail}<br>
-                <strong>Orario:</strong> ${app.start} - ${app.end}
-            `,
+      title: "Slot reserved",
+      text: "This time slot is already booked.",
       icon: "info"
     });
   });
