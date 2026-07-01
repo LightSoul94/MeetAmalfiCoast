@@ -644,10 +644,41 @@ h2 {
   color: var(--gold);
 }
 
+@media (max-width: 991.98px) {
+  .site-header,
+  .planning-header {
+    position: relative;
+    z-index: 2000;
+  }
+
+  .navbar {
+    position: relative;
+    z-index: 2001;
+  }
+
+  .navbar-collapse {
+    position: relative;
+    z-index: 2002;
+    background: #111;
+  }
+
+  .planning-main,
+  .calendar-card,
+  .calendar-grid {
+    position: relative;
+    z-index: 1;
+  }
+}
+
 @media (max-width: 991px) {
   .navbar {
     min-height: auto;
     padding: .8rem 0;
+  }
+
+  .navbar-nav .btn-gold {
+    display: inline-block;
+    margin-top: .8rem;
   }
 
   /* .brand-logo {
@@ -656,10 +687,12 @@ h2 {
   } */
 
   .navbar-collapse {
+    width: 100%;
     padding: 1rem 0 1.3rem;
     border-top: 1px solid rgba(214, 173, 97, .18);
     margin-top: .8rem;
   }
+
 
   /* .hero-section {
     min-height: 92vh;
@@ -779,4 +812,31 @@ input[type="time"] {
   box-shadow:
     0 4px 14px rgba(214, 173, 97, .20);
 
+}
+
+/* Pagina Privacy */
+.privacy-page {
+  padding-top: 120px !important;
+  color: var(--white);
+}
+
+.privacy-page h1 {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  color: var(--white);
+}
+
+.privacy-page h2 {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: var(--gold);
+  margin-top: 2rem;
+}
+
+.privacy-page p,
+.privacy-page li {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.privacy-page a {
+  color: var(--gold-light);
 }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace MeetAmalfiCoasts.Controllers;
+namespace MeetAmalfiCoast.Controllers;
 
 public class PlanningController : Controller
 {

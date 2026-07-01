@@ -1,4 +1,4 @@
-namespace MeetAmalfiCoasts.Models;
+namespace MeetAmalfiCoast.Models;
 
 public class ErrorViewModel
 {

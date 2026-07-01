@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using MeetAmalfiCoasts.Models;
+using MeetAmalfiCoast.Models;
 
-namespace MeetAmalfiCoasts.Controllers;
+namespace MeetAmalfiCoast.Controllers;
 
 public class HomeController : Controller
 {
