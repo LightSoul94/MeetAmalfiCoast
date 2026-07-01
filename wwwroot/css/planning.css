@@ -149,8 +149,46 @@ body {
   margin-top: 2px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
+  .planning-main {
+    padding: 12px;
+  }
+
+  .calendar-card {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .calendar-header {
+    gap: 10px;
+  }
+
+  .calendar-header h4 {
+    font-size: 1rem;
+    text-align: center;
+  }
+
   .calendar-grid {
-    min-width: 900px;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: 58px minmax(0, 1fr);
+    overflow-x: hidden;
+  }
+
+  .time-header,
+  .day-header {
+    height: 50px;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .time-label {
+    font-size: 11px;
+  }
+
+  .appointment {
+    left: 5px;
+    right: 5px;
+    padding: 6px 8px;
   }
 }

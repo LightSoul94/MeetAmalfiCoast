@@ -27,12 +27,12 @@ $(document).ready(function () {
   loadAppointmentsForSelectedWeek();
 
   $("#prevWeek").on("click", function () {
-    selectedDate.setDate(selectedDate.getDate() - 7);
+    selectedDate.setDate(selectedDate.getDate() - (isMobilePlanning() ? 1 : 7));
     loadAppointmentsForSelectedWeek();
   });
 
   $("#nextWeek").on("click", function () {
-    selectedDate.setDate(selectedDate.getDate() + 7);
+    selectedDate.setDate(selectedDate.getDate() + (isMobilePlanning() ? 1 : 7));
     loadAppointmentsForSelectedWeek();
   });
 
@@ -47,11 +47,25 @@ function renderCalendar() {
 
   renderTimeColumn();
 
-  currentWeekDays = getWeekDays(selectedDate);
+  if (isMobilePlanning()) {
+    const mobileDay = {
+      name: selectedDate.toLocaleDateString(browserLang, { weekday: "long" }),
+      shortDate: selectedDate.toLocaleDateString(browserLang, {
+        day: "2-digit",
+        month: "2-digit"
+      }),
+      isoDate: toIsoDate(selectedDate),
+      date: new Date(selectedDate)
+    };
 
-  currentWeekDays.forEach((dayInfo) => {
-    renderDayColumn(dayInfo);
-  });
+    renderDayColumn(mobileDay);
+  } else {
+    currentWeekDays = getWeekDays(selectedDate);
+
+    currentWeekDays.forEach((dayInfo) => {
+      renderDayColumn(dayInfo);
+    });
+  }
 
   renderCurrentTimeLine();
 }
@@ -79,6 +93,25 @@ function renderTimeColumn() {
 }
 
 function loadAppointmentsForSelectedWeek() {
+  if (isMobilePlanning()) {
+    const isoDate = toIsoDate(selectedDate);
+
+    if (unsubscribeAppointments) {
+      unsubscribeAppointments();
+    }
+
+    unsubscribeAppointments = PlanningService.listenAppointmentsByRange(
+      isoDate,
+      isoDate,
+      function (items) {
+        appointments = items;
+        renderCalendar();
+      }
+    );
+
+    return;
+  }
+
   currentWeekDays = getWeekDays(selectedDate);
 
   const startIsoDate = currentWeekDays[0].isoDate;
@@ -485,4 +518,9 @@ function getWeekDays(date) {
 // Funzione per capitalizzare la prima lettera di una stringa
 function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+// Funzione per rilevare se l'utente sta visualizzando il planning da un dispositivo mobile
+function isMobilePlanning() {
+  return window.innerWidth <= 950;
 }

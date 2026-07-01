@@ -1,5 +1,5 @@
 using Google.Cloud.Firestore;
-using MeetAmalfiCoasts.Models;
+using MeetAmalfiCoast.Models;
 
 public class FirestorePlanningService
 {

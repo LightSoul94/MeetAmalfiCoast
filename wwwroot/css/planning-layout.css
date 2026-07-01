@@ -6,22 +6,30 @@
 }
 
 .planning-header {
-
-    height: 78px;
-
     background: linear-gradient(90deg,#080808,#1c1c1c);
-
     border-bottom: 1px solid rgba(214,173,97,.30);
-
-    display:flex;
-
-    align-items:center;
-
 }
 
-.brand-logo{
+@media (min-width: 992px) {
+    .planning-header {
+        min-height: 78px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .planning-header {
+        height: auto;
+        align-items: stretch;
+    }
+
+    .planning-main {
+        padding-top: 20px;
+    }
+}
+
+/* .brand-logo{
     margin-top: 30px;
-}
+} */
 
 .brand-logo-small{
 
@@ -126,4 +134,14 @@
 
 .form-control:disabled, .form-control[readonly] {
     background: #1b1b1b !important;
+}
+
+.planning-header {
+    position: relative;
+    z-index: 2000;
+}
+
+.planning-main {
+    position: relative;
+    z-index: 1;
 }

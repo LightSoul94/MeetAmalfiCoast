@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using MeetAmalfiCoasts.Models;
+using MeetAmalfiCoast.Models;
 using Stripe;
 
-namespace MeetAmalfiCoasts.Controllers;
+namespace MeetAmalfiCoast.Controllers;
 
 [Route("Planning")]
 public class PlanningController : Controller

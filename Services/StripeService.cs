@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
-using MeetAmalfiCoasts.Models;
+using MeetAmalfiCoast.Models;
 
 public class StripeService
 {
@@ -48,7 +48,7 @@ public class StripeService
                         UnitAmount = amountInCents,
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
-                            Name = "Acconto prenotazione Meet Amalfi Coasts",
+                            Name = "Acconto prenotazione Meet Amalfi Coast",
                             Description = $"{appointment.Title} - {appointment.IsoDate} {appointment.Start}"
                         }
                     }

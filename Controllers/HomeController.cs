@@ -2,12 +2,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using MeetAmalfiCoasts.Models;
+using MeetAmalfiCoast.Models;
 using System.Net;
 using System.Net.Mail;
 using System.Text.Json;
 
-namespace MeetAmalfiCoasts.Controllers;
+namespace MeetAmalfiCoast.Controllers;
 
 public class HomeController : Controller
 {
