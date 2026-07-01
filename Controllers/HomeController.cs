@@ -68,6 +68,16 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Terms()
+    {
+        return View();
+    }
+
+    public IActionResult Cookies()
+    {
+        return View();
+    }
+
     public IActionResult Planning()
     {
         return View();
