@@ -66,7 +66,7 @@
                                 <p class="mb-0">© 2026 Meet Amalfi Coast. All rights reserved.</p>
                                 <div class="footer-links">
                                     <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                                    <a href="#">Terms & Conditions</a>
+                                    <a asp-area="" asp-controller="Home" asp-action="Terms">Terms & Conditions</a>
                                 </div>
                             </div>
                         </footer>
@@ -74,7 +74,41 @@
                         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
                         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                         <script src="~/js/script.js" asp-append-version="true"></script>
+                        <script src="~/js/utility.js"></script>
                         @await RenderSectionAsync("Scripts", required: false)
+
+                        <div id="cookieBanner" class="cookie-banner d-none">
+                            <div class="cookie-banner-content">
+
+                                <div>
+                                    <h5>We value your privacy</h5>
+
+                                    <p>
+                                        We use cookies to improve your browsing experience and analyze website traffic.
+                                        By clicking <strong>Accept</strong>, you consent to the use of non-essential cookies.
+                                    </p>
+
+                                    <p class="cookie-links mb-0">
+                                        Read our
+                                        <a href="/Home/Privacy">Privacy Policy</a>,
+                                        <a href="/Home/Terms">Terms &amp; Conditions</a>
+                                        and
+                                        <a href="/Home/Cookies">Cookie Policy</a>.
+                                    </p>
+                                </div>
+
+                                <div class="cookie-banner-actions mt-3">
+                                    <button type="button" id="rejectCookies" class="btn btn-outline-gold btn-sm">
+                                        Reject
+                                    </button>
+
+                                    <button type="button" id="acceptCookies" class="btn btn-gold btn-sm">
+                                        Accept
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
                     </body>
-    
+
                 </html>
