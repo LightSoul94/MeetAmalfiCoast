@@ -146,6 +146,7 @@ a {
   /* height: 105px; */
   object-fit: cover;
   object-position: center;
+  margin-top: 0px !important;
 }
 
 /* Tablet */
@@ -158,14 +159,14 @@ a {
 /* Smartphone */
 @media (max-width: 768px) {
   .brand-logo {
-    width: 79vw;
+    width: 75vw;
   }
 }
 
 /* Smartphone piccoli */
 @media (max-width: 576px) {
   .brand-logo {
-    width: 80vw;
+    width: 70vw;
   }
 }
 
@@ -296,7 +297,7 @@ a {
 
 }
 
-/*.hero-section {
+/* .hero-section {
   min-height: 100vh;
   position: relative;
   background:
@@ -314,7 +315,7 @@ a {
   position: relative;
   z-index: 1;
   padding-top: 88px;
-}*/
+} */
 
 .eyebrow {
   color: var(--gold);
@@ -340,11 +341,11 @@ h2 {
   line-height: 1.08;
 }
 
-/*.hero-text {
+/* .hero-text {
   color: var(--white);
   max-width: 520px;
   line-height: 1.9;
-}*/
+} */
 
 .gold-separator {
   display: flex;
@@ -571,6 +572,7 @@ h2 {
 
 }
 
+
 .contact-section {
   background: radial-gradient(circle at 15% 15%, rgba(214, 173, 97, .12), transparent 35%), #090909;
 }
@@ -659,13 +661,13 @@ h2 {
     margin-top: .8rem;
   }
 
-  /*.hero-section {
+  /* .hero-section {
     min-height: 92vh;
   }
 
   .hero-content {
     padding-top: 80px;
-  }*/
+  } */
 
   .experience-card {
     border-right: 0;
@@ -676,6 +678,10 @@ h2 {
     min-height: 360px;
   }
 }
+
+
+
+
 
 @media (max-width: 575px) {
 
