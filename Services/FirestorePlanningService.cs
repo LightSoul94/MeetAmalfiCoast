@@ -29,7 +29,7 @@ public class FirestorePlanningService
     }
 
     public async Task<string> CreatePaidAppointmentAsync(
-        PlanningAppointment appointment,
+        PlanningAppointmentsModel appointment,
         string stripeSessionId,
         long depositAmount,
         string currency)
@@ -77,4 +77,68 @@ public class FirestorePlanningService
 
         return doc.Id;
     }
+    #region Reminder Email Methods
+
+    // Questa regione contiene metodi per gestire le email di promemoria per gli appuntamenti confermati.
+    public async Task<List<PlanningAppointmentsModel>> GetAppointmentsForReminderAsync()
+    {
+        DateTime tomorrow = DateTime.Today.AddDays(1);
+
+        string tomorrowIsoDate = tomorrow.ToString("yyyy-MM-dd");
+
+        Query query = _db.Collection("appointments")
+            .WhereEqualTo("isoDate", tomorrowIsoDate)
+            .WhereEqualTo("status", "confirmed")
+            .WhereEqualTo("reminderEmailSent", false);
+
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+
+        List<PlanningAppointmentsModel> appointments = new();
+
+        foreach (DocumentSnapshot doc in snapshot.Documents)
+        {
+            Dictionary<string, object> data = doc.ToDictionary();
+
+            string customerEmail = data.GetValueOrDefault("customerEmail")?.ToString() ?? "";
+
+            if (string.IsNullOrWhiteSpace(customerEmail))
+            {
+                continue;
+            }
+
+            appointments.Add(new PlanningAppointmentsModel
+            {
+                Id = doc.Id,
+                IsoDate = data.GetValueOrDefault("isoDate")?.ToString() ?? "",
+                Start = data.GetValueOrDefault("start")?.ToString() ?? "",
+                End = data.GetValueOrDefault("end")?.ToString() ?? "",
+                Title = data.GetValueOrDefault("title")?.ToString() ?? "",
+
+                Customer = data.GetValueOrDefault("customerName")?.ToString()
+                           ?? data.GetValueOrDefault("customer")?.ToString()
+                           ?? "",
+
+                CustomerEmail = customerEmail,
+                SyncStatus = data.GetValueOrDefault("syncStatus")?.ToString() ?? "synced",
+                SyncError = data.GetValueOrDefault("syncError")?.ToString(),
+                Source = data.GetValueOrDefault("source")?.ToString() ?? "website"
+            });
+        }
+
+        return appointments;
+    }
+
+    // Metodo per aggiornare lo stato dell'appuntamento dopo l'invio dell'email di promemoria
+    public async Task MarkReminderEmailAsSentAsync(string appointmentId)
+    {
+        DocumentReference docRef = _db.Collection("appointments").Document(appointmentId);
+
+        await docRef.UpdateAsync(new Dictionary<string, object?>
+    {
+        { "reminderEmailSent", true },
+        { "reminderEmailSentAt", Timestamp.GetCurrentTimestamp() },
+        { "updatedAt", Timestamp.GetCurrentTimestamp() }
+    });
+    }
+    #endregion
 }

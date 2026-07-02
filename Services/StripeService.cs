@@ -24,7 +24,7 @@ public class StripeService
         StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
     }
 
-    public async Task<object> CreateCheckoutSessionAsync(PlanningAppointment appointment, HttpRequest request)
+    public async Task<object> CreateCheckoutSessionAsync(PlanningAppointmentsModel appointment, HttpRequest request)
     {
         string domain = $"{request.Scheme}://{request.Host}";
 
@@ -111,7 +111,7 @@ public class StripeService
             return;
         }
 
-        PlanningAppointment appointment = BuildAppointmentFromSession(session);
+        PlanningAppointmentsModel appointment = BuildAppointmentFromSession(session);
 
         string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
             appointment,
@@ -127,11 +127,11 @@ public class StripeService
         );
     }
 
-    private PlanningAppointment BuildAppointmentFromSession(Session session)
+    private PlanningAppointmentsModel BuildAppointmentFromSession(Session session)
     {
         Dictionary<string, string> metadata = session.Metadata;
 
-        return new PlanningAppointment
+        return new PlanningAppointmentsModel
         {
             Title = metadata.GetValueOrDefault("title") ?? "Prenotazione",
             Customer = metadata.GetValueOrDefault("customerName") ?? "",

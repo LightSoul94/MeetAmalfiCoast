@@ -22,6 +22,10 @@ builder.Services.Configure<BookingSettings>(
 builder.Services.AddSingleton<FirestorePlanningService>();
     // Registra il servizio di Stripe
 builder.Services.AddSingleton<StripeService>();
+    // Registra il servizio di invio email promemoria appuntamenti come hosted service
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddHostedService<AppointmentReminderService>();
+
 
 var app = builder.Build();
 
