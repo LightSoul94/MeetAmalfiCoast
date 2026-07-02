@@ -1,20 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace MeetAmalfiCoast.Controllers;
 
 public class PlanningController : Controller
 {
+    private readonly BookingSettings _bookingSettings;
     private readonly GoogleCalendarService _googleCalendarService;
     private readonly FirestorePlanningService _firestorePlanningService;
     private readonly ILogger<PlanningController> _logger;
     private readonly StripeService _stripeService;
 
+    const bool bypassStripe = false;
+
     public PlanningController(
+        IOptions<BookingSettings> bookingSettings,
         GoogleCalendarService googleCalendarService,
         FirestorePlanningService firestorePlanningService,
         ILogger<PlanningController> logger,
         StripeService stripeService)
     {
+        _bookingSettings = bookingSettings.Value;
         _googleCalendarService = googleCalendarService;
         _firestorePlanningService = firestorePlanningService;
         _logger = logger;
@@ -108,24 +114,67 @@ public class PlanningController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointment appointment)
     {
-        try
+        if (bypassStripe)
         {
-            var result = await _stripeService.CreateCheckoutSessionAsync(
+#pragma warning disable CS0162
+            string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
                 appointment,
-                Request
+                "BYPASS_STRIPE_TEST",
+                _bookingSettings.DepositAmount,
+                _bookingSettings.Currency
             );
 
-            return Json(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Errore durante la creazione della sessione di checkout Stripe");
+            try
+            {
+                string googleEventId = await _googleCalendarService.CreateEventAsync(appointment);
+
+                await _firestorePlanningService.MarkAsSyncedAsync(
+                    appointmentId,
+                    googleEventId,
+                    "primary"
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Appuntamento test creato ma non sincronizzato con Google Calendar");
+
+                await _firestorePlanningService.MarkAsErrorAsync(
+                    appointmentId,
+                    ex.Message
+                );
+            }
 
             return Json(new
             {
-                success = false,
-                message = "Errore durante la creazione della sessione di checkout."
+                success = true,
+                bypassStripe = true
             });
+#pragma warning restore CS0162
+        }
+        else
+        {
+#pragma warning disable CS0618
+
+            try
+            {
+                var result = await _stripeService.CreateCheckoutSessionAsync(
+                    appointment,
+                    Request
+                );
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore durante la creazione della sessione di checkout Stripe");
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Errore durante la creazione della sessione di checkout."
+                });
+            }
+#pragma warning restore CS0618
         }
     }
 

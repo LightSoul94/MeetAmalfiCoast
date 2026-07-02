@@ -27,6 +27,9 @@ builder.Services.AddSingleton<FirestorePlanningService>();
 builder.Services.AddSingleton<StripeService>();
     // Registra il servizio di sincronizzazione come hosted service
 builder.Services.AddHostedService<GoogleCalendarSyncWorker>();
+    // Registra il servizio di invio email promemoria appuntamenti come hosted service
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddHostedService<AppointmentReminderService>();
 
 var app = builder.Build();
 

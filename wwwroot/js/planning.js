@@ -357,6 +357,9 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
         syncStatus: "pending",
         syncError: null,
 
+        reminderEmailSent: false,
+        reminderEmailSentAt: null,
+
         lastModifiedBy: "website"
       };
     }
@@ -365,8 +368,8 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
       return;
 
     Swal.fire({
-      title: "Reindirizzamento al pagamento",
-      text: "Verrai portato alla pagina sicura per pagare l'acconto.",
+      title: "Creazione prenotazione",
+      text: "Attendere qualche secondo.",
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
@@ -375,17 +378,27 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
 
     PlanningService.createCheckoutSession(result.value)
       .then(function (response) {
-        if (!response || !response.success || !response.checkoutUrl) {
+
+        if (response && response.success && response.bypassStripe) {
           Swal.fire({
-            icon: "error",
-            title: "Errore",
-            text: response?.message || "Impossibile avviare il pagamento."
+            icon: "success",
+            title: "Prenotazione confermata",
+            text: "L'appuntamento è stato creato senza pagamento online."
           });
 
           return;
         }
 
-        window.location.href = response.checkoutUrl;
+        if (response && response.success && response.checkoutUrl) {
+          window.location.href = response.checkoutUrl;
+          return;
+        }
+
+        Swal.fire({
+          icon: "error",
+          title: "Errore",
+          text: response?.message || "Impossibile avviare il pagamento."
+        });
       })
       .catch(function () {
         Swal.fire({

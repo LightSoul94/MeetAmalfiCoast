@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
@@ -158,19 +160,19 @@ public class FirestorePlanningService
         string end = endDateTime.ToString("HH:mm");
 
         Dictionary<string, object?> data = new()
-    {
-        { "title", title },
-        { "isoDate", isoDate },
-        { "start", start },
-        { "end", end },
-        { "googleEventId", googleEventId },
-        { "googleCalendarId", "primary" },
-        { "syncStatus", "synced" },
-        { "syncError", null },
-        { "source", "google" },
-        { "lastModifiedBy", "google" },
-        { "updatedAt", Timestamp.GetCurrentTimestamp() }
-    };
+            {
+                { "title", title },
+                { "isoDate", isoDate },
+                { "start", start },
+                { "end", end },
+                { "googleEventId", googleEventId },
+                { "googleCalendarId", "primary" },
+                { "syncStatus", "synced" },
+                { "syncError", null },
+                { "source", "google" },
+                { "lastModifiedBy", "google" },
+                { "updatedAt", Timestamp.GetCurrentTimestamp() }
+            };
 
         if (snapshot.Documents.Count > 0)
         {
@@ -185,6 +187,10 @@ public class FirestorePlanningService
         data.Add("dropoffAddress", "");
         data.Add("notes", "");
         data.Add("status", "confirmed");
+
+        data.Add("reminderEmailSent", false);
+        data.Add("reminderEmailSentAt", null);
+
         data.Add("createdAt", Timestamp.GetCurrentTimestamp());
         data.Add("lastModifiedAt", Timestamp.GetCurrentTimestamp());
 
@@ -259,6 +265,10 @@ public class FirestorePlanningService
 
         { "createdAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() },
         { "updatedAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() },
+
+        { "reminderEmailSent", false },
+        { "reminderEmailSentAt", null },
+
         { "lastModifiedAt", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp() }
     };
 
@@ -266,4 +276,71 @@ public class FirestorePlanningService
 
         return doc.Id;
     }
+
+    #region Reminder Email Methods
+
+    // Questa regione contiene metodi per gestire le email di promemoria per gli appuntamenti confermati.
+    public async Task<List<PlanningAppointment>> GetAppointmentsForReminderAsync()
+    {
+        DateTime tomorrow = DateTime.Today.AddDays(1);
+
+        string tomorrowIsoDate = tomorrow.ToString("yyyy-MM-dd");
+
+        Query query = _db.Collection("appointments")
+            .WhereEqualTo("isoDate", tomorrowIsoDate)
+            .WhereEqualTo("status", "confirmed")
+            .WhereEqualTo("reminderEmailSent", false);
+
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+
+        List<PlanningAppointment> appointments = new();
+
+        foreach (DocumentSnapshot doc in snapshot.Documents)
+        {
+            Dictionary<string, object> data = doc.ToDictionary();
+
+            string customerEmail = data.GetValueOrDefault("customerEmail")?.ToString() ?? "";
+
+            if (string.IsNullOrWhiteSpace(customerEmail))
+            {
+                continue;
+            }
+
+            appointments.Add(new PlanningAppointment
+            {
+                Id = doc.Id,
+                IsoDate = data.GetValueOrDefault("isoDate")?.ToString() ?? "",
+                Start = data.GetValueOrDefault("start")?.ToString() ?? "",
+                End = data.GetValueOrDefault("end")?.ToString() ?? "",
+                Title = data.GetValueOrDefault("title")?.ToString() ?? "",
+
+                Customer = data.GetValueOrDefault("customerName")?.ToString()
+                           ?? data.GetValueOrDefault("customer")?.ToString()
+                           ?? "",
+
+                CustomerEmail = customerEmail,
+                GoogleEventId = data.GetValueOrDefault("googleEventId")?.ToString(),
+                GoogleCalendarId = data.GetValueOrDefault("googleCalendarId")?.ToString(),
+                SyncStatus = data.GetValueOrDefault("syncStatus")?.ToString() ?? "synced",
+                SyncError = data.GetValueOrDefault("syncError")?.ToString(),
+                Source = data.GetValueOrDefault("source")?.ToString() ?? "website"
+            });
+        }
+
+        return appointments;
+    }
+
+    // Metodo per aggiornare lo stato dell'appuntamento dopo l'invio dell'email di promemoria
+    public async Task MarkReminderEmailAsSentAsync(string appointmentId)
+    {
+        DocumentReference docRef = _db.Collection("appointments").Document(appointmentId);
+
+        await docRef.UpdateAsync(new Dictionary<string, object?>
+    {
+        { "reminderEmailSent", true },
+        { "reminderEmailSentAt", Timestamp.GetCurrentTimestamp() },
+        { "updatedAt", Timestamp.GetCurrentTimestamp() }
+    });
+    }
+    #endregion
 }
