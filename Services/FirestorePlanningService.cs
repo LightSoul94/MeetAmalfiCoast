@@ -57,6 +57,9 @@ public class FirestorePlanningService
             { "currency", currency },
             { "stripeSessionId", stripeSessionId },
 
+            { "reminderEmailSent", false },
+            { "reminderEmailSentAt", null },
+
             { "googleEventId", null },
             { "googleCalendarId", null },
 
