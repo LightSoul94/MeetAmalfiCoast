@@ -420,7 +420,7 @@ h2 {
 
 .split-image {
   min-height: 560px;
-  background: url("https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?auto=format&fit=crop&w=1400&q=85") center/cover no-repeat;
+  background: url("../images/background-amalfi.png") center/cover no-repeat;
 }
 
 .destination-card {
