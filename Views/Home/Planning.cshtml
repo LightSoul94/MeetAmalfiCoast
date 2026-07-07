@@ -22,13 +22,18 @@
   <div class="container-fluid p-3 w-100 d-flex justify-content-center align-items-center">
     <div class="calendar-card">
 
-      <div class="calendar-header">
-        <button class="btn btn-outline-primary btn-sm" id="prevWeek">←</button>
-        <div>
-          <h4 class="mb-0" style="color: #d6ad61">Calendario appuntamenti</h4>
-        </div>
-        <button class="btn btn-outline-primary btn-sm" id="nextWeek">→</button>
+      <div class="calendar-header d-flex justify-content-center">
+          <div>
+            <h4 class="mb-0" style="color: #d6ad61">Calendario appuntamenti</h4>
+          </div>
       </div>
+        <div class="calendar-header">
+        <button class="btn btn-outline-primary btn-sm" id="prevWeek">←</button>
+          <button id="todayWeek" type="button" class="btn btn-outline-primary">
+              Oggi
+          </button>
+        <button class="btn btn-outline-primary btn-sm" id="nextWeek">→</button>
+        </div>
 
       <div class="calendar-grid" id="calendarGrid">
         <!-- generato da planning.js -->
