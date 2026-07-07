@@ -192,3 +192,37 @@ body {
     padding: 6px 8px;
   }
 }
+
+/* Stile per la colonna della giornata corrente */
+.today-column {
+    background: rgba(214, 173, 97, 0.06);
+    position: relative;
+}
+
+.today-column .slot-time {
+    color: transparent;
+}
+
+.today-column .day-slot:hover .slot-time {
+    color: rgb(54, 43, 24);
+}
+
+.today-column::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(214,173,97,.45);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.today-header {
+    background: linear-gradient(
+        180deg,
+        rgba(214,173,97,.22),
+        rgba(214,173,97,.08)
+    );
+
+    color: #f0d28a;
+    font-weight: bold;
+}

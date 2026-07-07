@@ -40,6 +40,11 @@ $(document).ready(function () {
     renderCurrentTimeLine();
   }, 1000);
 
+  $("#todayWeek").on("click", function () {
+    selectedDate = new Date();
+    loadAppointmentsForSelectedWeek();
+  });
+
 });
 
 function renderCalendar() {
@@ -134,9 +139,16 @@ function loadAppointmentsForSelectedWeek() {
 function renderDayColumn(dayInfo) {
   const column = $("<div>").addClass("day-column");
 
+  const todayIso = toIsoDate(new Date());
+
+  if (dayInfo.isoDate === todayIso) {
+    column.addClass("today-column");
+  }
+
   column.append(
     $("<div>")
       .addClass("day-header")
+      .toggleClass("today-header", dayInfo.isoDate === todayIso)
       .html(`${capitalize(dayInfo.name)}<br><small>${dayInfo.shortDate}</small>`)
   );
 
