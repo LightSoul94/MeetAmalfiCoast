@@ -3,122 +3,13 @@
 
 // Write your JavaScript code.
 
-// Metodo per la gestione dello scroll della navbar e del form di contatto
-$(function () {
-
-  function closeMobileNavbar() {
-    const navbarElement = document.getElementById("mainNavbar");
-
-    if (!navbarElement)
-      return;
-
-    const navbar = bootstrap.Collapse.getInstance(navbarElement);
-
-    if (navbar)
-      navbar.hide();
-  }
-
-  function setActiveNavByHash(hash) {
-    $(".nav-link").removeClass("active");
-
-    if (!hash || hash === "#home") {
-      $('.nav-link[href="/"], .nav-link[href="/#home"]').addClass("active");
-      return;
-    }
-
-    $(`.nav-link[href="/${hash}"], .nav-link[href="${hash}"]`).addClass("active");
-  }
-
-  function updateActiveSection() {
-    if (window.location.pathname !== "/")
-      return;
-
-    const headerHeight = $(".site-header").outerHeight() || 0;
-    const scrollPosition = $(window).scrollTop() + headerHeight + 120;
-
-    let activeId = "";
-
-    $("section[id]").each(function () {
-      const sectionTop = $(this).offset().top;
-      const sectionBottom = sectionTop + $(this).outerHeight();
-
-      if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-        activeId = $(this).attr("id");
-      }
-    });
-
-    if (activeId) {
-      setActiveNavByHash("#" + activeId);
-    } else {
-      setActiveNavByHash("");
-    }
-  }
-
-  function scrollToHashSection(hash) {
-    if (!hash)
-      return;
-
-    const target = $(hash);
-
-    if (!target.length) {
-      window.location.href = "/" + hash;
-      return;
-    }
-
-    const headerHeight = $(".site-header").outerHeight() || 0;
-
-    $("html, body").animate({
-      scrollTop: target.offset().top - headerHeight
-    }, 400, function () {
-      updateActiveSection();
-    });
-
-    setActiveNavByHash(hash);
-  }
-
-  $(window).on("scroll", function () {
-    const scrolled = $(this).scrollTop() > 40;
-
-    $(".site-header").toggleClass("is-scrolled", scrolled);
-
-    updateActiveSection();
-  });
-
-  $(".nav-link[href^='/#'], .nav-link[href^='#'], .btn[href^='#']").on("click", function (event) {
-    const hash = this.hash;
-
-    closeMobileNavbar();
-
-    if (!hash)
-      return;
-
-    if (window.location.pathname !== "/") {
-      window.location.href = "/" + hash;
-      return;
-    }
-
-    if ($(hash).length) {
-      event.preventDefault();
-
-      history.pushState(null, "", hash);
-      scrollToHashSection(hash);
-    }
-  });
-
-  if (window.location.hash) {
-    setTimeout(function () {
-      scrollToHashSection(window.location.hash);
-    }, 100);
-  } else if (window.location.pathname === "/") {
-    updateActiveSection();
-  }
-});
-
 // Metodo per lo slider dell'hero
 $(document).ready(function () {
   initHeroCarousel();
+  initDestinationsSlider();
 });
 
+// Funzione per lo slider dell'hero
 function initHeroCarousel() {
   const slides = $(".hero-slide");
 
@@ -173,6 +64,72 @@ function initHeroCarousel() {
   }
 }
 
+// Funzione per lo slider delle destinazioni
+function initDestinationsSlider() {
+  const slider = $("#destinationsSlider");
+
+  if (!slider.length)
+    return;
+
+  const scrollAmount = () => {
+    const firstCard = slider.find(".destination-card").first();
+
+    if (!firstCard.length)
+      return 300;
+
+    return firstCard.outerWidth(true) * 2;
+  };
+
+  $(".destination-arrow-left").on("click", function () {
+    slider.get(0).scrollBy({
+      left: -scrollAmount(),
+      behavior: "smooth"
+    });
+  });
+
+  $(".destination-arrow-right").on("click", function () {
+    slider.get(0).scrollBy({
+      left: scrollAmount(),
+      behavior: "smooth"
+    });
+  });
+
+  let isDragging = false;
+  let startX = 0;
+  let initialScrollLeft = 0;
+
+  slider.on("mousedown", function (event) {
+    isDragging = true;
+    startX = event.pageX;
+    initialScrollLeft = this.scrollLeft;
+
+    slider.addClass("is-dragging");
+  });
+
+  $(document).on("mouseup", function () {
+    isDragging = false;
+    slider.removeClass("is-dragging");
+  });
+
+  slider.on("mouseleave", function () {
+    isDragging = false;
+    slider.removeClass("is-dragging");
+  });
+
+  slider.on("mousemove", function (event) {
+    if (!isDragging)
+      return;
+
+    event.preventDefault();
+
+    const distance = event.pageX - startX;
+    this.scrollLeft = initialScrollLeft - distance;
+  });
+
+  slider.on("dragstart", function (event) {
+    event.preventDefault();
+  });
+}
 
 // Metodo per invio del form di contatto con SweetAlert2 e Ajax
 $("#btnSendRequest").on("click", function () {
@@ -241,30 +198,4 @@ $("#btnSendRequest").on("click", function () {
     }
   });
 
-});
-
-// Metodo per caricare le recensioni di Google
-function loadGoogleReviewsSummary() {
-  $.get("/Home/GetGoogleReviews", function (data) {
-    const rating = data.rating || 0;
-    const reviewsCount = data.userRatingCount || 0;
-
-    $("#googleRating").text(rating.toFixed(1));
-    $("#googleReviewsCount").text(`Based on ${reviewsCount} Google Reviews`);
-
-    let stars = "";
-
-    for (let i = 1; i <= 5; i++) {
-      if (i <= Math.round(rating))
-        stars += '<i class="fa-solid fa-star"></i>';
-      else
-        stars += '<i class="fa-regular fa-star"></i>';
-    }
-
-    $("#googleStars").html(stars);
-  });
-}
-
-$(document).ready(function () {
-  loadGoogleReviewsSummary();
 });

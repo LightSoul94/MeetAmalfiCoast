@@ -63,6 +63,11 @@ public class HomeController : Controller
         return View(model);
     }
 
+    public IActionResult Gallery()
+    {
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();
@@ -74,6 +79,16 @@ public class HomeController : Controller
     }
 
     public IActionResult Cookies()
+    {
+        return View();
+    }
+
+    public IActionResult About()
+    {
+        return View();
+    }
+
+    public IActionResult Services()
     {
         return View();
     }
@@ -157,81 +172,5 @@ public class HomeController : Controller
                 message = "Unable to send your request. Please try again later."
             });
         }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetGoogleReviews()
-    {
-        var apiKey = _configuration["GooglePlaces:ApiKey"];
-        var placeId = _configuration["GooglePlaces:PlaceId"];
-
-        if (string.IsNullOrWhiteSpace(apiKey) ||
-            string.IsNullOrWhiteSpace(placeId))
-        {
-            return Json(new GoogleReviewsViewModel());
-        }
-
-        using var client = new HttpClient();
-
-        client.DefaultRequestHeaders.Add("X-Goog-Api-Key", apiKey);
-        client.DefaultRequestHeaders.Add(
-            "X-Goog-FieldMask",
-            "displayName,rating,userRatingCount,reviews"
-        );
-
-        var response = await client.GetAsync(
-            $"https://places.googleapis.com/v1/places/{placeId}"
-        );
-
-        var json = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return Json(new GoogleReviewsViewModel());
-        }
-
-        using var document = JsonDocument.Parse(json);
-        var root = document.RootElement;
-
-        var model = new GoogleReviewsViewModel
-        {
-            Name = root.TryGetProperty("displayName", out var displayName) &&
-                   displayName.TryGetProperty("text", out var name)
-                ? name.GetString() ?? ""
-                : "",
-
-            Rating = root.TryGetProperty("rating", out var rating)
-                ? rating.GetDouble()
-                : 0,
-
-            UserRatingCount = root.TryGetProperty("userRatingCount", out var count)
-                ? count.GetInt32()
-                : 0
-        };
-
-        if (root.TryGetProperty("reviews", out var reviews))
-        {
-            foreach (var review in reviews.EnumerateArray())
-            {
-                model.Reviews.Add(new GoogleReviewViewModel
-                {
-                    Author = review.TryGetProperty("authorAttribution", out var author) &&
-                             author.TryGetProperty("displayName", out var authorName)
-                        ? authorName.GetString() ?? "Google user"
-                        : "Google user",
-
-                    Rating = review.TryGetProperty("rating", out var reviewRating)
-                        ? reviewRating.GetDouble()
-                        : 0,
-
-                    Text = review.TryGetProperty("text", out var text) &&
-                           text.TryGetProperty("text", out var reviewText)
-                        ? reviewText.GetString() ?? ""
-                        : ""
-                });
-            }
-        }
-
-        return Json(model);
     }
 }

@@ -54,6 +54,15 @@ app.MapControllerRoute(
     });
 
 app.MapControllerRoute(
+    name: "gallery",
+    pattern: "gallery",
+    defaults: new
+    {
+        controller = "Home",
+        action = "Gallery"
+    });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
