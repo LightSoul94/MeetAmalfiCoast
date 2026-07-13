@@ -31,84 +31,170 @@
                 </button>
 
                 <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
-                    <ul class="navbar-nav align-items-lg-center gap-lg-4">
-                        <li class="nav-item"><a
-                            class="nav-link @(controller == "Home" && action == "Index" ? "active" : "")"
-                            href="/">Home</a></li>
-                            <li class="nav-item"><a
-                                class="nav-link @(controller == "Home" && action == "Experiences" ? "active" : "")"
-                                id="experiences-link" href="/#experiences">Experiences</a></li>
-                                <li class="nav-item"><a
-                                    class="nav-link @(controller == "Home" && action == "Destinations" ? "active" : "")"
-                                    id="destinations-link" href="/#destinations">Destinations</a></li>
-                                    <li class="nav-item"><a
-                                        class="nav-link @(controller == "Home" && action == "About" ? "active" : "")"
-                                        id="about-link" href="/#about">About us</a></li>
-                                        <li class="nav-item"><a
-                                            class="nav-link @(controller == "Home" && action == "Contact" ? "active" : "")"
-                                            id="contact-link" href="/#contact">Contact</a></li>
-                                            <li class="nav-item ms-lg-3"><a href="Planning" class="btn btn-gold">BOOK NOW</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </nav>
-                        </header>
-                        <div class="container">
-                            <main role="main" class="pb-3">
-                                @RenderBody()
-                            </main>
-                        </div>
+                    <ul class="navbar-nav align-items-lg-center">
 
-                        @* <footer class="border-top footer text-muted"> *@
-                        <footer class="site-footer footer">
-                            <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
-                                <p class="mb-0">© @DateTime.Now.Year Meet Amalfi Coast. All rights reserved.</p>
-                                <div class="footer-links">
-                                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                                    <a asp-area="" asp-controller="Home" asp-action="Terms">Terms & Conditions</a>
-                                </div>
-                            </div>
-                        </footer>
-                        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-                        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                        <script src="~/js/script.js" asp-append-version="true"></script>
-                        <script src="~/js/utility.js"></script>
-                        @await RenderSectionAsync("Scripts", required: false)
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Services">Services</a>
+                        </li>
 
-                        <div id="cookieBanner" class="cookie-banner d-none">
-                            <div class="cookie-banner-content">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="About">About us</a>
+                        </li>
 
-                                <div>
-                                    <h5>We value your privacy</h5>
+                        <li class="nav-item ms-lg-2">
+                            <a href="/Planning" class="btn btn-gold">BOOK NOW</a>
+                        </li>
 
-                                    <p>
-                                        We use cookies to improve your browsing experience and analyze website traffic.
-                                        By clicking <strong>Accept</strong>, you consent to the use of non-essential cookies.
-                                    </p>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-                                    <p class="cookie-links mb-0">
-                                        Read our
-                                        <a href="/Home/Privacy">Privacy Policy</a>,
-                                        <a href="/Home/Terms">Terms &amp; Conditions</a>
-                                        and
-                                        <a href="/Home/Cookies">Cookie Policy</a>.
-                                    </p>
-                                </div>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row align-items-center gy-4">
 
-                                <div class="cookie-banner-actions mt-3">
-                                    <button type="button" id="rejectCookies" class="btn btn-outline-gold btn-sm">
-                                        Reject
-                                    </button>
+                <!-- Logo -->
+                <div class="col-lg-2 text-center text-lg-start" style="padding: 0; margin-right: 20px;">
+                    <a asp-controller="Home" asp-action="Index">
+                        <img src="~/images/logo/old_logo_mobile.png" alt="Meet Amalfi Coast" style="width: 170px; height: auto;"
+                         asp-append-version="true">
+                    </a>
+                </div>
 
-                                    <button type="button" id="acceptCookies" class="btn btn-gold btn-sm">
-                                        Accept
-                                    </button>
-                                </div>
+                <!-- Claim -->
+                <div class="col-lg-4 text-center text-lg-start">
 
-                            </div>
-                        </div>
-                    </body>
+                    <p class="footer-claim mb-3">
+                        Discover the Amalfi Coast through unforgettable luxury experiences.
+                    </p>
 
-                </html>
+                    <div class="footer-social">
+
+                        <a href="https://www.instagram.com/meetamalficoasts/" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+
+                        <a href="#" target="_blank">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+
+                        <a href="#" target="_blank">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+
+                        <a href="https://l.instagram.com/?u=https%3A%2F%2Fwa.me%2F393319561421%3Ftext%3DHello%2521%25252520I%25252520saw%25252520your%25252520Instagram%25252520page%25252520%2528%2540MeetAmalfiCoast%2529%25252520and%25252520I%2525E2%252580%252599d%25252520like%25252520to%25252520book%25252520a%25252520private%25252520tour%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnQ5VKye9L6TfeAvlNKE266XN_ji00pxq26-ewzPFJh_CyHZ53fzuLo71gpJo_aem_X3H3scqHwhn07Pe-DWJB7A&e=AUArWAT80JsBIpenZvK2y3kcDT9ZnPZ4cLsHVBC5r6-P4YLB4C-rx4NLUhzwbRodgKFt_jPwpsF1ZkT3hdNxnuuQhkthugYIc7CquD13Il_Sq8oIrrLEGKflCzXFXtC2UeHs6fM"
+                           target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- Info -->
+                <div class="col-lg-5 text-center text-lg-end">
+
+                    <div class="footer-company">
+
+                        <p class="mb-1">
+                            Meet Amalfi Coast
+                        </p>
+
+                        <p class="mb-1">
+                            CAP XXXXX
+                        </p>
+
+                        <p class="mb-1">
+                            Via XXXXX, Amalfi (SA), Italy
+                        </p>
+
+                        <p class="mb-1">
+                            +39 XXX XXX XXXX
+                        </p>
+
+                        <p class="mb-3">
+                            info@meetamalficoast.com
+                        </p>
+
+                    </div>
+
+                    <div class="footer-links mb-2">
+
+                        <a asp-controller="Home" asp-action="Privacy">
+                            Privacy
+                        </a>
+
+                        <span>|</span>
+
+                        <a asp-controller="Home" asp-action="Terms">
+                            Terms &amp; Conditions
+                        </a>
+
+                    </div>
+
+                    <small>
+                        © @DateTime.Now.Year Meet Amalfi Coast. All rights reserved.
+                    </small>
+
+                </div>
+
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/utility.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <div id="cookieBanner" class="cookie-banner d-none">
+        <div class="cookie-banner-content">
+
+            <div>
+                <h5>We value your privacy</h5>
+
+                <p>
+                    We use cookies to improve your browsing experience and analyze website traffic.
+                    By clicking <strong>Accept</strong>, you consent to the use of non-essential cookies.
+                </p>
+
+                <p class="cookie-links mb-0">
+                    Read our
+                    <a href="/Home/Privacy">Privacy Policy</a>,
+                    <a href="/Home/Terms">Terms &amp; Conditions</a>
+                    and
+                    <a href="/Home/Cookies">Cookie Policy</a>.
+                </p>
+            </div>
+
+            <div class="cookie-banner-actions mt-3">
+                <button type="button" id="rejectCookies" class="btn btn-outline-gold btn-sm">
+                    Reject
+                </button>
+
+                <button type="button" id="acceptCookies" class="btn btn-gold btn-sm">
+                    Accept
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="~/js/utility.js" asp-append-version="true"></script>
+    <script src="~/js/script.js" asp-append-version="true"></script>
+
+</body>
+
+</html>

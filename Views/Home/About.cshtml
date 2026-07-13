@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "About Us";
+}
+
+@section Scripts {
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="~/css/about.css"
+          asp-append-version="true" />
+}
+
+<main class="about-page">
+
+    <section class="about-hero">
+
+        <div class="about-hero-background"></div>
+        <div class="about-hero-overlay"></div>
+
+        <div class="container-fluid px-lg-5 about-hero-content">
+            <div class="row min-vh-100 align-items-center">
+                <div class="col-lg-7 col-xl-6">
+
+                    <p class="eyebrow mb-3">
+                        Meet Amalfi Coast
+                    </p>
+
+                    <h1 class="about-title">
+                        About Us
+                    </h1>
+
+                    <div class="gold-separator my-4">
+                        <span></span>
+                    </div>
+
+                    <p class="about-introduction">
+                        Meet Amalfi Coast was created from a genuine passion
+                        for one of the most beautiful places in the world.
+                    </p>
+
+                    <p class="about-description">
+                        We help our guests discover the Amalfi Coast through
+                        private transfers, carefully planned journeys and
+                        authentic local experiences.
+                    </p>
+
+                    <p class="about-description">
+                        From the first request to the final destination, every
+                        detail is handled with professionalism, discretion and
+                        personal attention.
+                    </p>
+
+                    <div class="about-actions mt-5">
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="contact"
+                           class="btn btn-outline-gold">
+                            Contact us
+                        </a>
+
+                        <a href="/Planning" class="btn btn-gold">
+                            Book now
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>

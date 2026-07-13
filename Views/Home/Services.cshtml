@@ -1,0 +1,154 @@
+@{
+    ViewData["Title"] = "Our Services";
+}
+
+@section Scripts {
+    @* <link rel="stylesheet"          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> *@
+
+    <link rel="stylesheet"
+          href="~/css/services.css"
+          asp-append-version="true" />
+}
+
+<section class="services-page">
+
+    <div class="services-background"></div>
+    <div class="services-overlay"></div>
+
+    <div class="container-fluid services-content">
+
+        <header class="services-header text-center">
+            <p class="eyebrow mb-2">Travel without compromise</p>
+
+            <h1>Our Services</h1>
+
+            <div class="gold-separator justify-content-center mt-4">
+                <span></span>
+            </div>
+
+            <p class="services-intro">
+                Private transportation and tailor-made experiences designed
+                to make every journey along the Amalfi Coast comfortable,
+                refined and effortless.
+            </p>
+        </header>
+
+        <div class="services-grid">
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+
+                <h2>Private Transfers</h2>
+
+                <p>
+                    Comfortable private transfers between Naples, Sorrento,
+                    Positano, Amalfi, Ravello and the main destinations
+                    of the Amalfi Coast.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Planning"
+                   class="service-link">
+                    Book now
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-plane-arrival"></i>
+                </div>
+
+                <h2>Airport Transfers</h2>
+
+                <p>
+                    Reliable pick-up and drop-off services from Naples
+                    International Airport, with professional assistance
+                    from your arrival.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Planning"
+                   class="service-link">
+                    Book now
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <h2>Chauffeur Service</h2>
+
+                <p>
+                    A private driver at your disposal for business trips,
+                    special occasions or a completely personalised travel
+                    experience.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Planning"
+                   class="service-link">
+                    Book now
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+
+                <h2>Private Tours</h2>
+
+                <p>
+                    Discover the Amalfi Coast through exclusive itineraries,
+                    panoramic stops and carefully selected destinations.
+                </p>
+
+                <a href="/#contact"
+                   class="service-link">
+                    Request information
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                </div>
+
+                <h2>Events & Weddings</h2>
+
+                <p>
+                    Coordinated transportation for weddings, ceremonies,
+                    private events and groups, managed with precision
+                    and discretion.
+                </p>
+
+                <a href="/#contact"
+                   class="service-link">
+                    Request information
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </article>
+
+        </div>
+
+        <div class="services-call-to-action text-center">
+            <p>
+                Looking for a personalised service?
+            </p>
+
+            <a href="/#contact" class="btn btn-gold">
+                Contact us
+            </a>
+        </div>
+
+    </div>
+
+</section>

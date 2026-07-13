@@ -1,0 +1,127 @@
+@{
+    ViewData["Title"] = "Gallery";
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/gallery.css" asp-append-version="true" />
+    <script src="~/js/gallery.js" asp-append-version="true"></script>
+}
+
+<section class="gallery-page">
+
+    <div class="gallery-heading text-center">
+        <p class="eyebrow mb-2">Discover the Amalfi Coast</p>
+
+        <h1>Gallery</h1>
+
+        <div class="gold-separator justify-content-center my-4">
+            <span></span>
+        </div>
+
+        <p>
+            Explore some of the most beautiful views, destinations and experiences
+            along the Amalfi Coast.
+        </p>
+    </div>
+
+    <div class="gallery-grid">
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-01.jpg"
+                data-gallery-alt="View of Positano">
+            <img src="/images/gallery/gallery-01.jpg" alt="View of Positano" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-02.jpg"
+                data-gallery-alt="Amalfi Coast landscape">
+            <img src="/images/gallery/gallery-02.jpg" alt="Amalfi Coast landscape" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-03.jpg"
+                data-gallery-alt="Coastal road">
+            <img src="/images/gallery/gallery-03.jpg" alt="Coastal road" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-04.jpg"
+                data-gallery-alt="Ravello landscape">
+            <img src="/images/gallery/gallery-04.jpg" alt="Ravello landscape" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-05.jpg"
+                data-gallery-alt="Capri from the sea">
+            <img src="/images/gallery/gallery-05.jpg" alt="Capri from the sea" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-06.jpg"
+                data-gallery-alt="Amalfi village">
+            <img src="/images/gallery/gallery-06.jpg" alt="Amalfi village" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-07.jpg"
+                data-gallery-alt="Private transfer on the Amalfi Coast">
+            <img src="/images/gallery/gallery-07.jpg" alt="Private transfer on the Amalfi Coast" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-08.jpg"
+                data-gallery-alt="Mediterranean sea">
+            <img src="/images/gallery/gallery-08.jpg" alt="Mediterranean sea" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+        <button class="gallery-item" type="button" data-gallery-image="/images/gallery/gallery-09.jpg"
+                data-gallery-alt="Sunset on the Amalfi Coast">
+            <img src="/images/gallery/gallery-09.jpg" alt="Sunset on the Amalfi Coast" loading="lazy">
+            <span class="gallery-item-overlay">
+                <span>View image</span>
+            </span>
+        </button>
+
+    </div>
+
+</section>
+
+<div id="galleryLightbox" class="gallery-lightbox" role="dialog" aria-modal="true" aria-hidden="true"
+     aria-label="Image preview">
+
+    <button id="closeGalleryLightbox" class="gallery-lightbox-close" type="button" aria-label="Close image">
+        &times;
+    </button>
+
+    <button id="previousGalleryImage" class="gallery-lightbox-navigation gallery-lightbox-previous" type="button"
+            aria-label="Previous image">
+        &#10094;
+    </button>
+
+    <div class="gallery-lightbox-content">
+        <img id="galleryLightboxImage" src="" alt="">
+        <p id="galleryLightboxCaption"></p>
+    </div>
+
+    <button id="nextGalleryImage" class="gallery-lightbox-navigation gallery-lightbox-next" type="button"
+            aria-label="Next image">
+        &#10095;
+    </button>
+
+</div>

@@ -328,11 +328,11 @@ h1,
 h2,
 h3 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
+  /* font-weight: 400; */
 }
 
 h1 {
-  font-size: clamp(3rem, 6vw, 5.8rem);
+  /* font-size: clamp(3rem, 6vw, 5.8rem); */
   line-height: 1.05;
 }
 
@@ -368,38 +368,52 @@ h2 {
   transform: rotate(45deg);
 }
 
+.gold-separator-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+}
+
+.gold-separator-large::before,
+.gold-separator-large::after {
+    content: "";
+    width: 400px;
+    height: 1px;
+    background: var(--gold);
+}
+
+.gold-separator-large span {
+    width: 10px;
+    height: 10px;
+    background: var(--gold-light);
+    transform: rotate(45deg);
+}
+
 .section-dark {
   background: linear-gradient(180deg, #0b0b0b, #111);
   border-top: 1px solid rgba(214, 173, 97, .2);
   border-bottom: 1px solid rgba(214, 173, 97, .2);
 }
 
-.experience-card {
+.services-card {
   height: 100%;
   padding: 2.3rem 1.6rem;
   text-align: center;
   border-right: 1px solid var(--border);
 }
 
-.experience-row>div:last-child .experience-card {
+.services-row>div:last-child .services-card {
   border-right: 0;
 }
 
-.experience-card i {
+.services-card i {
   font-size: 2.6rem;
   color: var(--gold);
   margin-bottom: 1.4rem;
 }
 
-.experience-card h3,
-.destination-card h3 {
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: .14rem;
-  font-size: 1.05rem;
-}
-
-.experience-card p {
+.services-card p {
   color: var(--muted);
   line-height: 1.7;
 }
@@ -423,156 +437,297 @@ h2 {
   background: url("../images/background-amalfi.png") center/cover no-repeat;
 }
 
-.destination-card {
-  min-height: 290px;
+.services-card h3,
+.destination-card h3 {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .14rem;
+  font-size: 1.05rem;
+}
+
+/* ========================================
+   DESTINATIONS
+======================================== */
+
+.destinations-section {
   position: relative;
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
   overflow: hidden;
-  border: 1px solid rgba(214, 173, 97, .18);
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(214, 173, 97, .06),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #080808,
+      #101010
+    );
+  border-top: 1px solid rgba(214, 173, 97, .20);
+  border-bottom: 1px solid rgba(214, 173, 97, .20);
+}
+
+.destinations-slider-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.destinations-slider {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: .5rem clamp(1rem, 5vw, 6rem) 1.5rem;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.destinations-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.destinations-slider.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+}
+
+.destination-card {
+  position: relative;
+  flex: 0 0 clamp(220px, 18vw, 290px);
+  min-height: 390px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(214, 173, 97, .25);
+  scroll-snap-align: start;
+  transition:
+    transform .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
 }
 
 .destination-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, .82));
-  transition: background .25s ease;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, .08) 0%,
+      rgba(0, 0, 0, .25) 42%,
+      rgba(0, 0, 0, .92) 100%
+    );
+  transition: background .35s ease;
 }
 
-.destination-card>div {
-  position: relative;
-  z-index: 1;
+.destination-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color .35s ease;
 }
 
-.destination-card a {
-  color: var(--gold-light);
-  text-transform: uppercase;
-  letter-spacing: .14rem;
-  font-size: .78rem;
-  border-bottom: 1px solid var(--gold-light);
+.destination-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(240, 210, 138, .65);
+  box-shadow:
+    0 18px 35px rgba(0, 0, 0, .38),
+    0 0 18px rgba(214, 173, 97, .08);
 }
 
 .destination-card:hover::before {
-  background: rgba(0, 0, 0, .55);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, .03) 0%,
+      rgba(0, 0, 0, .16) 40%,
+      rgba(0, 0, 0, .86) 100%
+    );
 }
 
-.destination-positano {
-  background-image: url("https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=85");
+.destination-card:hover::after {
+  border-color: rgba(240, 210, 138, .45);
 }
 
-.destination-capri {
-  background-image: url("https://images.unsplash.com/photo-1534445867742-43195f401b6c?auto=format&fit=crop&w=900&q=85");
+.destination-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 1.7rem 1.4rem;
+  text-align: center;
 }
 
-.destination-ravello {
-  background-image: url("https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&w=900&q=85");
+.destination-content p {
+  min-height: 58px;
+  margin-bottom: 1.1rem;
+  color: rgba(247, 242, 232, .72);
+  font-size: .79rem;
+  line-height: 1.55;
+}
+
+.destination-content h3 {
+  margin-bottom: .8rem;
+  color: var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .12rem;
+}
+
+.destination-content a {
+  display: inline-block;
+  color: var(--gold-light);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .12rem;
+  border-bottom: 1px solid var(--gold-light);
+  padding-bottom: .2rem;
+  transition:
+    color .25s ease,
+    border-color .25s ease;
+}
+
+.destination-content a:hover {
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.destination-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--gold-light);
+  background: rgba(7, 7, 7, .88);
+  border: 1px solid rgba(214, 173, 97, .55);
+  transform: translateY(-50%);
+  transition:
+    background .25s ease,
+    color .25s ease,
+    border-color .25s ease;
+}
+
+.destination-arrow:hover {
+  color: #17110a;
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+.destination-arrow-left {
+  left: 1.2rem;
+}
+
+.destination-arrow-right {
+  right: 1.2rem;
+}
+
+/* Immagini destinazioni */
+
+.destination-civitavecchia {
+  background-image:
+    url("https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-firenze {
+  background-image:
+    url("https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-bari {
+  background-image:
+    url("https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-roma {
+  background-image:
+    url("https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-vietri {
+  background-image:
+    url("https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?auto=format&fit=crop&w=900&q=85");
+}
+
+.destination-praiano {
+  background-image:
+    url("https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?auto=format&fit=crop&w=900&q=85");
 }
 
 .destination-amalfi {
-  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85");
+  background-image:
+    url("https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=900&q=85");
 }
 
-.google-stars {
-  font-size: 42px;
-  color: #d6ad61;
-  letter-spacing: 6px;
+.destination-positano {
+  background-image:
+    url("https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=85");
 }
 
-#googleRating {
-  font-size: 32px;
-  color: #f7f2e8;
+.destination-sorrento {
+  background-image:
+    url("https://images.unsplash.com/photo-1533676802871-eca1ae998cd5?auto=format&fit=crop&w=900&q=85");
 }
 
-#googleReviewsCount {
-  display: block;
-  color: #bcb7ad;
-  margin-top: 6px;
+.destination-ravello {
+  background-image:
+    url("https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&w=900&q=85");
 }
 
-.reviews-section {
+/* Tablet */
 
-  background: #090909;
-  overflow: hidden;
-
-}
-
-.reviews-slider {
-
-  overflow: hidden;
-  position: relative;
-
-}
-
-.reviews-track {
-
-  display: flex;
-  gap: 24px;
-
-  width: max-content;
-
-  animation: reviewsScroll 60s linear infinite;
-
-}
-
-.reviews-slider:hover .reviews-track {
-
-  animation-play-state: paused;
-
-}
-
-.review-card {
-
-  width: 380px;
-
-  padding: 30px;
-
-  background: #111;
-
-  border: 1px solid rgba(214, 173, 97, .25);
-
-  color: #f7f2e8;
-
-  flex-shrink: 0;
-
-}
-
-.review-card h5 {
-
-  color: #d6ad61;
-
-}
-
-.review-stars {
-
-  color: #d6ad61;
-  font-size: 20px;
-  margin-bottom: 15px;
-
-}
-
-@keyframes reviewsScroll {
-
-  from {
-
-    transform: translateX(0);
-
+@media (max-width: 991px) {
+  .destinations-slider {
+    padding-inline: 1rem;
   }
 
-  to {
-
-    transform: translateX(-50%);
-
+  .destination-card {
+    flex-basis: 250px;
+    min-height: 360px;
   }
 
+  .destination-arrow {
+    display: none;
+  }
 }
 
+/* Mobile */
 
+@media (max-width: 575px) {
+  .destinations-slider {
+    gap: .8rem;
+  }
+
+  .destination-card {
+    flex-basis: 82vw;
+    min-height: 390px;
+  }
+
+  .destination-content {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .destination-content p {
+    min-height: auto;
+  }
+}
+
+/* MODULO CONTATTI */
 .contact-section {
   background: radial-gradient(circle at 15% 15%, rgba(214, 173, 97, .12), transparent 35%), #090909;
 }
@@ -702,7 +857,7 @@ h2 {
     padding-top: 80px;
   } */
 
-  .experience-card {
+  .services-card {
     border-right: 0;
     border-bottom: 1px solid var(--border);
   }
