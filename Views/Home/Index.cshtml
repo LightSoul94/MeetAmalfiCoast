@@ -130,27 +130,55 @@
   <section id="newsletter" class="section-dark py-5">
     <div class="container">
       <div class="newsletter-wrapper">
+
         <div class="gold-separator-large justify-content-center mb-5">
           <span></span>
         </div>
+
         <div class="section-title text-center">
           <p class="eyebrow mb-4">Join our newsletter</p>
+
           <p class="newsletter-text">
-            Sign up to automatically receive email updates whenever there
-            are news and promotions!
+            Sign up to receive news, travel inspiration and exclusive
+            promotions from Meet Amalfi Coast.
           </p>
         </div>
-        <form id="newsletterForm" class="newsletter-form mt-5">
+
+        <form id="newsletterForm" class="newsletter-form mt-5" novalidate>
+
           <div class="newsletter-input-group">
-            <input type="email" class="form-control" placeholder="Enter your email" required>
-            <button type="submit" class="btn btn-gold">
+            <input id="newsletterEmail" name="newsletterEmail" type="email" class="form-control"
+                   placeholder="Enter your email" autocomplete="email" maxlength="254" required>
+
+            <button id="btnNewsletterSubscribe" type="submit" class="btn btn-gold">
               Sign Up
             </button>
           </div>
+
+          <div class="form-check newsletter-privacy mt-3">
+            <input id="newsletterPrivacy" class="form-check-input" type="checkbox" required>
+
+            <label class="form-check-label" for="newsletterPrivacy">
+              I have read the
+              <a asp-controller="Home" asp-action="Privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+              and agree to receive promotional communications.
+            </label>
+          </div>
+
+          <!-- Campo antispam invisibile agli utenti -->
+          <div class="newsletter-honeypot" aria-hidden="true">
+            <label for="newsletterWebsite">Website</label>
+            <input id="newsletterWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
         </form>
+
         <div class="gold-separator-large justify-content-center mt-5">
           <span></span>
         </div>
+
       </div>
     </div>
   </section>

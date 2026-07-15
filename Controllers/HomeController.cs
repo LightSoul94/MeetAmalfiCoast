@@ -15,17 +15,26 @@ public class HomeController : Controller
     private readonly IWebHostEnvironment _environment;
     private readonly SmtpSettings _smtp;
     private readonly IConfiguration _configuration;
+    private readonly FirestoreNewsletterService _newsletterService;
+    private readonly NewsletterEmailTemplateService _newsletterTemplateService;
+    private readonly EmailService _emailService;
 
     public HomeController(
         ILogger<HomeController> logger,
         IWebHostEnvironment environment,
         IOptions<SmtpSettings> smtp,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        FirestoreNewsletterService newsletterService,
+        NewsletterEmailTemplateService newsletterTemplateService,
+        EmailService emailService)
     {
         _logger = logger;
         _environment = environment;
         _smtp = smtp.Value;
         _configuration = configuration;
+        _newsletterService = newsletterService;
+        _newsletterTemplateService = newsletterTemplateService;
+        _emailService = emailService;
     }
 
     public IActionResult Index()
@@ -67,7 +76,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    
+
     public IActionResult Privacy()
     {
         return View();
@@ -92,7 +101,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    
+
     public IActionResult Planning()
     {
         return View();
@@ -174,79 +183,129 @@ public class HomeController : Controller
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetGoogleReviews()
+    [HttpPost]
+    public async Task<IActionResult> SubscribeNewsletter([FromBody] NewsletterSubscriptionRequest request)
     {
-        var apiKey = _configuration["GooglePlaces:ApiKey"];
-        var placeId = _configuration["GooglePlaces:PlaceId"];
-
-        if (string.IsNullOrWhiteSpace(apiKey) ||
-            string.IsNullOrWhiteSpace(placeId))
+        if (!string.IsNullOrWhiteSpace(request.Website))
         {
-            return Json(new GoogleReviewsViewModel());
-        }
-
-        using var client = new HttpClient();
-
-        client.DefaultRequestHeaders.Add("X-Goog-Api-Key", apiKey);
-        client.DefaultRequestHeaders.Add(
-            "X-Goog-FieldMask",
-            "displayName,rating,userRatingCount,reviews"
-        );
-
-        var response = await client.GetAsync(
-            $"https://places.googleapis.com/v1/places/{placeId}"
-        );
-
-        var json = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return Json(new GoogleReviewsViewModel());
-        }
-
-        using var document = JsonDocument.Parse(json);
-        var root = document.RootElement;
-
-        var model = new GoogleReviewsViewModel
-        {
-            Name = root.TryGetProperty("displayName", out var displayName) &&
-                   displayName.TryGetProperty("text", out var name)
-                ? name.GetString() ?? ""
-                : "",
-
-            Rating = root.TryGetProperty("rating", out var rating)
-                ? rating.GetDouble()
-                : 0,
-
-            UserRatingCount = root.TryGetProperty("userRatingCount", out var count)
-                ? count.GetInt32()
-                : 0
-        };
-
-        if (root.TryGetProperty("reviews", out var reviews))
-        {
-            foreach (var review in reviews.EnumerateArray())
+            return Ok(new
             {
-                model.Reviews.Add(new GoogleReviewViewModel
+                success = true,
+                message = "Subscription completed successfully."
+            });
+        }
+
+        if (!request.PrivacyConsent)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "You must accept the Privacy Policy."
+            });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Please enter a valid email address."
+            });
+        }
+
+        NewsletterSubscriptionResult result =
+            await _newsletterService.SubscribeAsync(request);
+
+        if (!result.Success)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
                 {
-                    Author = review.TryGetProperty("authorAttribution", out var author) &&
-                             author.TryGetProperty("displayName", out var authorName)
-                        ? authorName.GetString() ?? "Google user"
-                        : "Google user",
+                    success = false,
+                    message = result.Message
+                }
+            );
+        }
 
-                    Rating = review.TryGetProperty("rating", out var reviewRating)
-                        ? reviewRating.GetDouble()
-                        : 0,
+        if (!result.AlreadySubscribed)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(result.UnsubscribeToken))
+                {
+                    throw new InvalidOperationException(
+                        "Token di disiscrizione non generato."
+                    );
+                }
 
-                    Text = review.TryGetProperty("text", out var text) &&
-                           text.TryGetProperty("text", out var reviewText)
-                        ? reviewText.GetString() ?? ""
-                        : ""
-                });
+                string unsubscribeUrl =
+                    Url.Action(
+                        action: nameof(UnsubscribeNewsletter),
+                        controller: "Home",
+                        values: new
+                        {
+                            token = result.UnsubscribeToken
+                        },
+                        protocol: Request.Scheme
+                    )
+                    ?? throw new InvalidOperationException(
+                        "Impossibile generare il link di disiscrizione."
+                    );
+
+                string emailBody =
+                    await _newsletterTemplateService
+                        .BuildWelcomeEmailAsync(unsubscribeUrl);
+
+                await _emailService.SendAsync(
+                    request.Email.Trim(),
+                    "Welcome to Meet Amalfi Coast",
+                    emailBody
+                );
+
+                await _newsletterService
+                    .MarkWelcomeEmailAsSentAsync(request.Email);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Errore durante l'invio della mail di benvenuto a {Email}",
+                    request.Email
+                );
             }
         }
 
-        return Json(model);
+        return Ok(new
+        {
+            success = true,
+            alreadySubscribed = result.AlreadySubscribed,
+            message = result.Message
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> UnsubscribeNewsletter(string token)
+    {
+        bool deleted =
+            await _newsletterService
+                .DeleteByUnsubscribeTokenAsync(token);
+
+        if (!deleted)
+        {
+            return Content(
+                """
+            The unsubscribe link is invalid or has already been used.
+            """,
+                "text/plain"
+            );
+        }
+
+        return Content(
+            """
+        You have successfully unsubscribed from the Meet Amalfi Coast newsletter.
+        """,
+            "text/plain"
+        );
     }
 }

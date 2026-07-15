@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 public class PlanningAppointment
 {
     public string Id { get; set; } = string.Empty;
@@ -5,6 +7,8 @@ public class PlanningAppointment
     public string Start { get; set; } = string.Empty;
     public string End { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+
+   [JsonPropertyName("customerName")]
     public string Customer { get; set; } = string.Empty;
     public string CustomerEmail { get; set; } = string.Empty;
 

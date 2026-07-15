@@ -153,7 +153,7 @@ public class PlanningController : Controller
         }
         else
         {
-#pragma warning disable CS0618
+#pragma warning disable CS0162
 
             try
             {
@@ -174,7 +174,7 @@ public class PlanningController : Controller
                     message = "Errore durante la creazione della sessione di checkout."
                 });
             }
-#pragma warning restore CS0618
+#pragma warning restore CS0162
         }
     }
 

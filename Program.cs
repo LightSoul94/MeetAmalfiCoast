@@ -4,32 +4,44 @@ var builder = WebApplication.CreateBuilder(args);
 // Registra i servizi MVC
 builder.Services.AddControllersWithViews();
 
-// Registra i servizi di configurazione
-    // Registra i servizi di configurazione per Google Calendar
+
+// Configurazioni
+
 builder.Services.Configure<GoogleCalendarSettings>(
     builder.Configuration.GetSection("GoogleCalendar"));
-    // Registra i servizi di configurazione per SMTP
+
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("Smtp"));
-    // Registra i servizi di configurazione per Stripe
+
 builder.Services.Configure<StripeSettings>(
     builder.Configuration.GetSection("Stripe"));
-// Registra i servizi di configurazione per Booking
+
 builder.Services.Configure<BookingSettings>(
     builder.Configuration.GetSection("Booking"));
 
-// Registra i servizi applicativi
-    // Registra il servizio di Google Calendar
+// Servizi applicativi
+
 builder.Services.AddSingleton<GoogleCalendarService>();
-    // Registra il servizio di Firestore Planning
+
 builder.Services.AddSingleton<FirestorePlanningService>();
-    // Registra il servizio di Stripe
-builder.Services.AddSingleton<StripeService>();
-    // Registra il servizio di sincronizzazione come hosted service
-builder.Services.AddHostedService<GoogleCalendarSyncWorker>();
-    // Registra il servizio di invio email promemoria appuntamenti come hosted service
+
+builder.Services.AddSingleton<FirestoreNewsletterService>();
+
+builder.Services.AddSingleton<NewsletterEmailTemplateService>();
+
 builder.Services.AddSingleton<EmailService>();
+
+builder.Services.AddSingleton<StripeService>();
+
+    
+// Hosted services
+
+builder.Services.AddHostedService<GoogleCalendarSyncWorker>();
+
 builder.Services.AddHostedService<AppointmentReminderService>();
+
+builder.Services.AddHostedService<NewsletterReminderService>();
+
 
 var app = builder.Build();
 

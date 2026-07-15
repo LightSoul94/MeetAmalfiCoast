@@ -199,3 +199,121 @@ $("#btnSendRequest").on("click", function () {
   });
 
 });
+
+// Metodo per l'iscrizione alla newsletter
+$("#newsletterForm").on("submit", function (event) {
+  event.preventDefault();
+
+  const email = $("#newsletterEmail").val().trim();
+  const privacyConsent = $("#newsletterPrivacy").is(":checked");
+  const website = $("#newsletterWebsite").val().trim();
+  const submitButton = $("#btnNewsletterSubscribe");
+
+  if (!email) {
+    Swal.fire({
+      icon: "warning",
+      title: "Email required",
+      text: "Please enter your email address."
+    });
+
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    Swal.fire({
+      icon: "warning",
+      title: "Invalid email",
+      text: "Please enter a valid email address."
+    });
+
+    return;
+  }
+
+  if (!privacyConsent) {
+    Swal.fire({
+      icon: "warning",
+      title: "Privacy consent required",
+      text: "Please accept the Privacy Policy before subscribing."
+    });
+
+    return;
+  }
+
+  const data = {
+    Email: email,
+    PrivacyConsent: privacyConsent,
+    Website: website
+  };
+
+  setNewsletterLoadingState(submitButton, true);
+
+  $.ajax({
+    url: "/Home/SubscribeNewsletter",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(data),
+
+    success: function (response) {
+      if (!response.success) {
+        showNewsletterError(response.message);
+        return;
+      }
+
+      if (response.alreadySubscribed) {
+        Swal.fire({
+          icon: "info",
+          title: "Already subscribed",
+          text: "This email address is already registered for our newsletter."
+        });
+
+        return;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Welcome!",
+        text: "You have successfully joined the Meet Amalfi Coast newsletter."
+      });
+
+      $("#newsletterForm")[0].reset();
+    },
+
+    error: function (xhr) {
+      const message =
+        xhr.responseJSON?.message ||
+        "Unable to complete your subscription. Please try again.";
+
+      showNewsletterError(message);
+    },
+
+    complete: function () {
+      setNewsletterLoadingState(submitButton, false);
+    }
+  });
+});
+
+function isValidEmail(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailPattern.test(email);
+}
+
+function setNewsletterLoadingState(button, isLoading) {
+  button.prop("disabled", isLoading);
+
+  if (isLoading) {
+    button
+      .data("original-text", button.text())
+      .html('<span class="spinner-border spinner-border-sm me-2"></span>Signing up');
+  } else {
+    button.text(button.data("original-text") || "Sign Up");
+  }
+}
+
+function showNewsletterError(message) {
+  Swal.fire({
+    icon: "error",
+    title: "Subscription failed",
+    text: message
+  });
+}

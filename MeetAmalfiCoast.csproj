@@ -11,6 +11,10 @@
     <PackageReference Include="Google.Apis.Calendar.v3" Version="1.75.0.4182" />
     <PackageReference Include="Google.Cloud.Firestore" Version="4.3.0" />
     <PackageReference Include="Stripe.net" Version="52.1.0" />
+    <Content Include="EmailTemplates\*.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

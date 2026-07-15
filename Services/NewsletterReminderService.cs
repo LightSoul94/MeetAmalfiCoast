@@ -1,0 +1,114 @@
+public class NewsletterReminderService : BackgroundService
+{
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<NewsletterReminderService> _logger;
+    private readonly EmailService _emailService;
+
+    public NewsletterReminderService(
+        IServiceScopeFactory scopeFactory,
+        ILogger<NewsletterReminderService> logger,
+        EmailService emailService)
+    {
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+        _emailService = emailService;
+    }
+
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
+    {
+        await Task.Delay(
+            TimeSpan.FromSeconds(10),
+            stoppingToken
+        );
+
+        using PeriodicTimer timer =
+            new(TimeSpan.FromHours(24));
+
+        do
+        {
+            try
+            {
+                await ProcessMonthlyRemindersAsync(
+                    stoppingToken
+                );
+            }
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Errore durante l'invio dei promemoria newsletter."
+                );
+            }
+        }
+        while (await timer.WaitForNextTickAsync(stoppingToken));
+    }
+
+    private async Task ProcessMonthlyRemindersAsync(
+        CancellationToken cancellationToken)
+    {
+        using IServiceScope scope =
+            _scopeFactory.CreateScope();
+
+        FirestoreNewsletterService newsletterService =
+            scope.ServiceProvider
+                .GetRequiredService<FirestoreNewsletterService>();
+
+        NewsletterEmailTemplateService templateService =
+            scope.ServiceProvider
+                .GetRequiredService<NewsletterEmailTemplateService>();
+
+        EmailService emailService =
+            scope.ServiceProvider
+                .GetRequiredService<EmailService>();
+
+        List<NewsletterSubscriptionModel> subscribers =
+            await newsletterService
+                .GetSubscribersForMonthlyReminderAsync();
+
+        if (subscribers.Count == 0)
+        {
+            return;
+        }
+
+        foreach (NewsletterSubscriptionModel subscriber in subscribers)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                string unsubscribeUrl =
+                    $"http://localhost:5087/Home/UnsubscribeNewsletter?token={subscriber.UnsubscribeToken}";
+
+                string emailBody =
+                    await templateService
+                        .BuildReminderEmailAsync(unsubscribeUrl);
+
+                await emailService.SendAsync(
+                    subscriber.Email,
+                    "The Amalfi Coast is waiting for you",
+                    emailBody
+                );
+
+                await newsletterService
+                    .MarkReminderEmailAsSentAsync(subscriber.Id);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Errore durante l'invio del promemoria newsletter a {Email}.",
+                    subscriber.Email
+                );
+            }
+        }
+    }
+}
