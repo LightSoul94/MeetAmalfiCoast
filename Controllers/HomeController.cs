@@ -15,17 +15,26 @@ public class HomeController : Controller
     private readonly IWebHostEnvironment _environment;
     private readonly SmtpSettings _smtp;
     private readonly IConfiguration _configuration;
+    private readonly NewsletterEmailTemplateService _newsletterTemplateService;
+    private readonly FirestoreNewsletterService _newsletterService;
+    private readonly EmailService _emailService;
 
     public HomeController(
         ILogger<HomeController> logger,
         IWebHostEnvironment environment,
         IOptions<SmtpSettings> smtp,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        NewsletterEmailTemplateService newsletterTemplateService,
+        FirestoreNewsletterService firestoreNewsletterService,
+        EmailService emailService)
     {
         _logger = logger;
         _environment = environment;
         _smtp = smtp.Value;
         _configuration = configuration;
+        _newsletterTemplateService = newsletterTemplateService;
+        _newsletterService = firestoreNewsletterService;
+        _emailService = emailService;
     }
 
     public IActionResult Index()
@@ -89,11 +98,6 @@ public class HomeController : Controller
     }
 
     public IActionResult Services()
-    {
-        return View();
-    }
-
-    public IActionResult Planning()
     {
         return View();
     }
@@ -172,5 +176,131 @@ public class HomeController : Controller
                 message = "Unable to send your request. Please try again later."
             });
         }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SubscribeNewsletter([FromBody] NewsletterSubscriptionRequest request)
+    {
+        if (!string.IsNullOrWhiteSpace(request.Website))
+        {
+            return Ok(new
+            {
+                success = true,
+                message = "Subscription completed successfully."
+            });
+        }
+
+        if (!request.PrivacyConsent)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "You must accept the Privacy Policy."
+            });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Please enter a valid email address."
+            });
+        }
+
+        NewsletterSubscriptionResult result =
+            await _newsletterService.SubscribeAsync(request);
+
+        if (!result.Success)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    success = false,
+                    message = result.Message
+                }
+            );
+        }
+
+        if (!result.AlreadySubscribed)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(result.UnsubscribeToken))
+                {
+                    throw new InvalidOperationException(
+                        "Token di disiscrizione non generato."
+                    );
+                }
+
+                string unsubscribeUrl =
+                    Url.Action(
+                        action: nameof(UnsubscribeNewsletter),
+                        controller: "Home",
+                        values: new
+                        {
+                            token = result.UnsubscribeToken
+                        },
+                        protocol: Request.Scheme
+                    )
+                    ?? throw new InvalidOperationException(
+                        "Impossibile generare il link di disiscrizione."
+                    );
+
+                string emailBody =
+                    await _newsletterTemplateService
+                        .BuildWelcomeEmailAsync(unsubscribeUrl);
+
+                await _emailService.SendAsync(
+                    request.Email.Trim(),
+                    "Welcome to Meet Amalfi Coast",
+                    emailBody
+                );
+
+                await _newsletterService
+                    .MarkWelcomeEmailAsSentAsync(request.Email);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Errore durante l'invio della mail di benvenuto a {Email}",
+                    request.Email
+                );
+            }
+        }
+
+        return Ok(new
+        {
+            success = true,
+            alreadySubscribed = result.AlreadySubscribed,
+            message = result.Message
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> UnsubscribeNewsletter(string token)
+    {
+        bool deleted =
+            await _newsletterService
+                .DeleteByUnsubscribeTokenAsync(token);
+
+        if (!deleted)
+        {
+            return Content(
+                """
+            The unsubscribe link is invalid or has already been used.
+            """,
+                "text/plain"
+            );
+        }
+
+        return Content(
+            """
+        You have successfully unsubscribed from the Meet Amalfi Coast newsletter.
+        """,
+            "text/plain"
+        );
     }
 }

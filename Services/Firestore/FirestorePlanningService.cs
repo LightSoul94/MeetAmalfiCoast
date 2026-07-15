@@ -14,6 +14,7 @@ public class FirestorePlanningService
 
         var credentialPath = Path.Combine(
             environment.ContentRootPath,
+            "Configuration",
             "firebase-service-account.json"
         );
 

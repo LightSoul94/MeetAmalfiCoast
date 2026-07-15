@@ -1,30 +1,42 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
+// Crea il builder per la configurazione dell'applicazione web
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Registra i servizi MVC
 builder.Services.AddControllersWithViews();
 
-// Registra i servizi di configurazione
-    // Registra i servizi di configurazione per SMTP
+
+// Configurazioni
+
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("Smtp"));
-    // Registra i servizi di configurazione per Stripe
+
 builder.Services.Configure<StripeSettings>(
     builder.Configuration.GetSection("Stripe"));
-    // Registra i servizi di configurazione per Booking
+
 builder.Services.Configure<BookingSettings>(
     builder.Configuration.GetSection("Booking"));
 
 // Registra i servizi applicativi
-    // Registra il servizio di Firestore Planning
+
 builder.Services.AddSingleton<FirestorePlanningService>();
-    // Registra il servizio di Stripe
+
+builder.Services.AddSingleton<FirestoreNewsletterService>();
+
+builder.Services.AddSingleton<NewsletterEmailTemplateService>();
+
 builder.Services.AddSingleton<StripeService>();
-    // Registra il servizio di invio email promemoria appuntamenti come hosted service
+
 builder.Services.AddSingleton<EmailService>();
+
+
+// Hosted services
+
 builder.Services.AddHostedService<AppointmentReminderService>();
+
+builder.Services.AddHostedService<NewsletterReminderService>();
 
 
 var app = builder.Build();
@@ -49,8 +61,8 @@ app.MapControllerRoute(
     pattern: "planning",
     defaults: new
     {
-        controller = "Home",
-        action = "Planning"
+        controller = "Planning",
+        action = "Index"
     });
 
 app.MapControllerRoute(

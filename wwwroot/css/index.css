@@ -51,6 +51,58 @@
     z-index: 4;
 }
 
+.hero-content-slides {
+    position: relative;
+    width: 100%;
+    min-height: 540px;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content-slide {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(calc(-50% + 28px));
+    transition:
+        opacity .8s ease,
+        transform .8s ease,
+        visibility .8s ease;
+}
+
+.hero-content-slide.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 991px) {
+    .hero-content-slides {
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-content-slides {
+        min-height: 580px;
+    }
+
+    .hero-content-slide {
+        top: 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-content-slide {
+        transition: none;
+    }
+}
+
 @keyframes heroZoom {
     from {
         transform: scale(1);
@@ -345,46 +397,83 @@
 }
 
 /* Sezione Newsletter */
-.newsletter-wrapper{
-    max-width:900px;
-    margin:0 auto;
+.newsletter-wrapper {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2rem 0;
 }
 
-.newsletter-text{
-    max-width:650px;
-    margin:0 auto;
-    color:var(--white);
-    line-height:1.8;
+.newsletter-text {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--muted);
+  line-height: 1.8;
 }
 
-.newsletter-form{
-    max-width:720px;
-    margin:0 auto;
+.newsletter-form {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.newsletter-input-group{
-    display:flex;
-    gap:14px;
+.newsletter-input-group {
+  display: flex;
+  align-items: stretch;
 }
 
-.newsletter-input-group .form-control{
-    flex:1;
+.newsletter-input-group .form-control {
+  min-height: 54px;
+  border-right: 0;
 }
 
-.newsletter-input-group .btn{
-    min-width:150px;
+.newsletter-input-group .btn {
+  min-width: 150px;
 }
 
-@media (max-width:768px){
+.newsletter-privacy {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
 
-    .newsletter-input-group{
-        flex-direction:column;
-    }
+.newsletter-privacy .form-check-input {
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(214, 173, 97, 0.5);
+}
 
-    .newsletter-input-group .btn{
-        width:100%;
-    }
+.newsletter-privacy .form-check-input:checked {
+  background-color: var(--gold);
+  border-color: var(--gold);
+}
 
+.newsletter-privacy a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.newsletter-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 575px) {
+  .newsletter-input-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .newsletter-input-group .form-control {
+    border-right: 1px solid rgba(214, 173, 97, 0.28);
+  }
+
+  .newsletter-input-group .btn {
+    width: 100%;
+  }
 }
 
 /* Sezioni Luxury trip, lingue e VIP */

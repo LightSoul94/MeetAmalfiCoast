@@ -4,7 +4,7 @@
 
 @model MeetAmalfiCoast.Models.HomeViewModel
 
-@section Scripts {
+@section Styles {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
 }
@@ -41,10 +41,11 @@
 
     <div class="hero-overlay"></div>
 
-    <div class="container-fluid px-lg-5 hero-content">
-      <div class="row min-vh-100 align-items-center">
-        <div class="col-lg-6 col-xl-5">
+    <div class="container hero-content">
 
+      <div class="hero-content-slides">
+
+        <div class="hero-content-slide active">
           <p class="eyebrow">Private Transfer Service</p>
 
           <h1>
@@ -58,14 +59,38 @@
 
           <p class="hero-text">
             Private transfers from Naples, Amalfi, Positano, Ravello and Sorrento.
-            Professional driver, comfortable vehicles and real journeys with happy travelers.
+            Professional drivers, comfortable vehicles and journeys planned
+            around your needs.
           </p>
 
-          <a href="/Gallery" class="btn btn-gold mt-4">
+          <a href="/Planning" class="btn btn-gold mt-4">
+            Book your transfer
+          </a>
+        </div>
+
+        <div class="hero-content-slide">
+          <p class="eyebrow">People and experiences</p>
+
+          <h1>
+            More Than a Journey,<br>
+            A Memory to Share
+          </h1>
+
+          <div class="gold-separator my-4">
+            <span></span>
+          </div>
+
+          <p class="hero-text">
+            Take a look at our photo gallery featuring our guests,
+            their journeys and the memories we have shared along
+            the Amalfi Coast.
+          </p>
+
+          <a asp-controller="Home" asp-action="Gallery" class="btn btn-gold mt-4">
             Explore the photo gallery
           </a>
-
         </div>
+
       </div>
     </div>
 
@@ -130,27 +155,55 @@
   <section id="newsletter" class="section-dark py-5">
     <div class="container">
       <div class="newsletter-wrapper">
+
         <div class="gold-separator-large justify-content-center mb-5">
           <span></span>
         </div>
+
         <div class="section-title text-center">
           <p class="eyebrow mb-4">Join our newsletter</p>
+
           <p class="newsletter-text">
-            Sign up to automatically receive email updates whenever there
-            are news and promotions!
+            Sign up to receive news, travel inspiration and exclusive
+            promotions from Meet Amalfi Coast.
           </p>
         </div>
-        <form id="newsletterForm" class="newsletter-form mt-5">
+
+        <form id="newsletterForm" class="newsletter-form mt-5" novalidate>
+
           <div class="newsletter-input-group">
-            <input type="email" class="form-control" placeholder="Enter your email" required>
-            <button type="submit" class="btn btn-gold">
+            <input id="newsletterEmail" name="newsletterEmail" type="email" class="form-control"
+                   placeholder="Enter your email" autocomplete="email" maxlength="254" required>
+
+            <button id="btnNewsletterSubscribe" type="submit" class="btn btn-gold">
               Sign Up
             </button>
           </div>
+
+          <div class="form-check newsletter-privacy mt-3">
+            <input id="newsletterPrivacy" class="form-check-input" type="checkbox" required>
+
+            <label class="form-check-label" for="newsletterPrivacy">
+              I have read the
+              <a asp-controller="Home" asp-action="Privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+              and agree to receive promotional communications.
+            </label>
+          </div>
+
+          <!-- Campo antispam invisibile agli utenti -->
+          <div class="newsletter-honeypot" aria-hidden="true">
+            <label for="newsletterWebsite">Website</label>
+            <input id="newsletterWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
         </form>
+
         <div class="gold-separator-large justify-content-center mt-5">
           <span></span>
         </div>
+
       </div>
     </div>
   </section>

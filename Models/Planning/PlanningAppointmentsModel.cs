@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MeetAmalfiCoast.Models;
 
 public class PlanningAppointmentsModel
@@ -6,9 +8,8 @@ public class PlanningAppointmentsModel
 
     public string Title { get; set; } = string.Empty;
 
+    [JsonPropertyName("customerName")]
     public string Customer { get; set; } = string.Empty;
-
-    public string CustomerName { get; set; } = string.Empty;
 
     public string CustomerEmail { get; set; } = string.Empty;
 

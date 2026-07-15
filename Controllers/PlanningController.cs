@@ -25,6 +25,11 @@ public class PlanningController : Controller
         _logger = logger;
     }
 
+    public IActionResult Index()
+    {
+        return View();
+    }
+
     [HttpPost("StripeWebhook")]
     public async Task<IActionResult> StripeWebhook()
     {
