@@ -6,6 +6,7 @@
 // Metodo per lo slider dell'hero
 $(document).ready(function () {
   initHeroCarousel();
+  initHeroContentCarousel();
   initDestinationsSlider();
 });
 
@@ -62,6 +63,32 @@ function initHeroCarousel() {
   } else {
     setTimeout(showNextSlide, 6000);
   }
+}
+
+// Funzione per lo slider del contenuto dell'hero
+function initHeroContentCarousel() {
+  const contentSlides = $(".hero-content-slide");
+
+  if (contentSlides.length <= 1)
+    return;
+
+  let currentContentIndex = 0;
+
+  setInterval(function () {
+    contentSlides
+      .eq(currentContentIndex)
+      .removeClass("active");
+
+    currentContentIndex++;
+
+    if (currentContentIndex >= contentSlides.length)
+      currentContentIndex = 0;
+
+    contentSlides
+      .eq(currentContentIndex)
+      .addClass("active");
+
+  }, 7000);
 }
 
 // Funzione per lo slider delle destinazioni

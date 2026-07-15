@@ -13,6 +13,7 @@ public class FirestoreNewsletterService
     {
         string credentialPath = Path.Combine(
             environment.ContentRootPath,
+            "Configuration",
             "firebase-service-account.json"
         );
 
@@ -98,6 +99,7 @@ public class FirestoreNewsletterService
         );
     }
 
+    // Invia promemoria newsletter mensile
     public async Task<List<NewsletterSubscriptionModel>>
         GetSubscribersForMonthlyReminderAsync()
     {

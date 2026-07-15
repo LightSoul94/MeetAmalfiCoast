@@ -64,8 +64,8 @@ app.MapControllerRoute(
     pattern: "planning",
     defaults: new
     {
-        controller = "Home",
-        action = "Planning"
+        controller = "Planning",
+        action = "Index"
     });
 
 app.MapControllerRoute(

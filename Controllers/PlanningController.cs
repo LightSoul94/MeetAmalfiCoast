@@ -27,6 +27,11 @@ public class PlanningController : Controller
         _stripeService = stripeService;
     }
 
+    public IActionResult Index()
+    {
+        return View();
+    }
+
     [HttpGet]
     public IActionResult ConnectGoogleCalendar()
     {

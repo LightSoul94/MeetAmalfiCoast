@@ -102,11 +102,6 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Planning()
-    {
-        return View();
-    }
-
     [HttpPost]
     public async Task<IActionResult> SendContactRequest([FromBody] ContactRequestModel model)
     {
