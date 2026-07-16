@@ -50,6 +50,7 @@ public class AppointmentReminderService : BackgroundService
             }
 
             await _emailService.SendAppointmentReminderAsync(appointment);
+            await _emailService.SendNewBookingNotificationAsync(appointment);
 
             await _firestorePlanningService.MarkReminderEmailAsSentAsync(appointment.Id);
 

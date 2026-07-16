@@ -15,8 +15,8 @@ public class HomeController : Controller
     private readonly IWebHostEnvironment _environment;
     private readonly SmtpSettings _smtp;
     private readonly IConfiguration _configuration;
-    private readonly NewsletterEmailTemplateService _newsletterTemplateService;
     private readonly FirestoreNewsletterService _newsletterService;
+    private readonly NewsletterEmailTemplateService _newsletterTemplateService;
     private readonly EmailService _emailService;
 
     public HomeController(
@@ -24,16 +24,16 @@ public class HomeController : Controller
         IWebHostEnvironment environment,
         IOptions<SmtpSettings> smtp,
         IConfiguration configuration,
-        NewsletterEmailTemplateService newsletterTemplateService,
         FirestoreNewsletterService firestoreNewsletterService,
+        NewsletterEmailTemplateService newsletterTemplateService,
         EmailService emailService)
     {
         _logger = logger;
         _environment = environment;
         _smtp = smtp.Value;
         _configuration = configuration;
-        _newsletterTemplateService = newsletterTemplateService;
         _newsletterService = firestoreNewsletterService;
+        _newsletterTemplateService = newsletterTemplateService;
         _emailService = emailService;
     }
 
@@ -130,15 +130,65 @@ public class HomeController : Controller
         try
         {
             var body = $@"
-		<h2>New Meet Amalfi Coast request</h2>
+            <div style=""font-family: Arial, Helvetica, sans-serif; color:#333; line-height:1.6;"">
 
-		<p><strong>Name:</strong> {WebUtility.HtmlEncode(model.Name)}</p>
-		<p><strong>Email:</strong> {WebUtility.HtmlEncode(model.Email)}</p>
-		<p><strong>Experience:</strong> {WebUtility.HtmlEncode(model.Service)}</p>
+                <h2 style=""color:#1f2937; margin-bottom:10px;"">
+                    📩 Nuova richiesta di contatto
+                </h2>
 
-		<p><strong>Message:</strong></p>
-		<p>{WebUtility.HtmlEncode(model.Message).Replace("\n", "<br>")}</p>
-	";
+                <p>
+                    Hai ricevuto una nuova richiesta dal modulo contatti del sito
+                    <strong>Meet Amalfi Coast</strong>.
+                </p>
+
+                <hr style=""border:none; border-top:1px solid #ddd; margin:25px 0;"">
+
+                <table cellpadding=""6"" cellspacing=""0"">
+                    <tr>
+                        <td><strong>Nome</strong></td>
+                        <td>{WebUtility.HtmlEncode(model.Name)}</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Email</strong></td>
+                        <td>
+                            <a href=""mailto:{WebUtility.HtmlEncode(model.Email)}"">
+                                {WebUtility.HtmlEncode(model.Email)}
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Esperienza richiesta</strong></td>
+                        <td>{WebUtility.HtmlEncode(model.Service)}</td>
+                    </tr>
+                </table>
+
+                <h3 style=""margin-top:30px; color:#1f2937;"">
+                    Messaggio
+                </h3>
+
+                <div style=""
+                    background:#f8f9fa;
+                    border-left:4px solid #d6ad61;
+                    padding:15px;
+                    border-radius:4px;"">
+                    {WebUtility.HtmlEncode(model.Message).Replace("\n", "<br>")}
+                </div>
+
+                <hr style=""border:none; border-top:1px solid #ddd; margin:30px 0 20px 0;"">
+
+                <p style=""font-size:12px; color:#777;"">
+                    Questa email è stata inviata automaticamente dal modulo contatti del sito
+                    <strong>Meet Amalfi Coast</strong>.<br>
+                    Per rispondere al cliente puoi utilizzare direttamente il pulsante
+                    <strong>Rispondi</strong> del tuo client di posta oppure scrivere all'indirizzo
+                    <a href=""mailto:{WebUtility.HtmlEncode(model.Email)}"">
+                        {WebUtility.HtmlEncode(model.Email)}
+                    </a>.
+                </p>
+
+            </div>";
 
             using var message = new MailMessage();
 
