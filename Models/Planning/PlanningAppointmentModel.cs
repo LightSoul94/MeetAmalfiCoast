@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-public class PlanningAppointment
+public class PlanningAppointmentModel
 {
     public string Id { get; set; } = string.Empty;
     public string IsoDate { get; set; } = string.Empty;

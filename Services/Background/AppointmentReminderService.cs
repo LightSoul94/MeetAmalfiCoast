@@ -39,10 +39,10 @@ public class AppointmentReminderService : BackgroundService
     // Invia i promemoria appuntamenti via email.
     private async Task SendReminderEmailsAsync()
     {
-        List<PlanningAppointment> appointments =
+        List<PlanningAppointmentModel> appointments =
             await _firestorePlanningService.GetAppointmentsForReminderAsync();
 
-        foreach (PlanningAppointment appointment in appointments)
+        foreach (PlanningAppointmentModel appointment in appointments)
         {
             if (string.IsNullOrWhiteSpace(appointment.CustomerEmail))
             {

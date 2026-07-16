@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Hosting;
 
-public class GoogleCalendarSyncWorker : BackgroundService
+public class GoogleCalendarSyncWorkerService : BackgroundService
 {
     private readonly GoogleCalendarService _googleCalendarService;
-    private readonly ILogger<GoogleCalendarSyncWorker> _logger;
+    private readonly ILogger<GoogleCalendarSyncWorkerService> _logger;
 
-    public GoogleCalendarSyncWorker(
+    public GoogleCalendarSyncWorkerService  (
         GoogleCalendarService googleCalendarService,
-        ILogger<GoogleCalendarSyncWorker> logger)
+        ILogger<GoogleCalendarSyncWorkerService> logger)
     {
         _googleCalendarService = googleCalendarService;
         _logger = logger;

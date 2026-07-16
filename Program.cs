@@ -36,7 +36,7 @@ builder.Services.AddSingleton<StripeService>();
     
 // Hosted services
 
-builder.Services.AddHostedService<GoogleCalendarSyncWorker>();
+builder.Services.AddHostedService<GoogleCalendarSyncWorkerService>();
 
 builder.Services.AddHostedService<AppointmentReminderService>();
 

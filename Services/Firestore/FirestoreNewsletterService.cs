@@ -29,8 +29,8 @@ public class FirestoreNewsletterService
         }.Build();
     }
 
-    public async Task<NewsletterSubscriptionResult> SubscribeAsync(
-        NewsletterSubscriptionRequest request)
+    public async Task<NewsletterSubscriptionResultModel> SubscribeAsync(
+        NewsletterSubscriptionRequestModel request)
     {
         string normalizedEmail = NormalizeEmail(request.Email);
         string documentId = CreateEmailHash(normalizedEmail);
@@ -48,7 +48,7 @@ public class FirestoreNewsletterService
 
                 if (snapshot.Exists)
                 {
-                    return NewsletterSubscriptionResult.Existing();
+                    return NewsletterSubscriptionResultModel.Existing();
                 }
 
                 NewsletterSubscriptionModel subscription = new()
@@ -73,7 +73,7 @@ public class FirestoreNewsletterService
                     subscription
                 );
 
-                return NewsletterSubscriptionResult.Created(
+                return NewsletterSubscriptionResultModel.Created(
                     unsubscribeToken
                 );
             });

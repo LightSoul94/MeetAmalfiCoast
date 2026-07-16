@@ -1,4 +1,4 @@
-public class NewsletterSubscriptionResult
+public class NewsletterSubscriptionResultModel
 {
     public bool Success { get; set; }
 
@@ -8,10 +8,10 @@ public class NewsletterSubscriptionResult
 
     public string? UnsubscribeToken { get; set; }
 
-    public static NewsletterSubscriptionResult Created(
+    public static NewsletterSubscriptionResultModel Created(
         string unsubscribeToken)
     {
-        return new NewsletterSubscriptionResult
+        return new NewsletterSubscriptionResultModel
         {
             Success = true,
             AlreadySubscribed = false,
@@ -20,9 +20,9 @@ public class NewsletterSubscriptionResult
         };
     }
 
-    public static NewsletterSubscriptionResult Existing()
+    public static NewsletterSubscriptionResultModel Existing()
     {
-        return new NewsletterSubscriptionResult
+        return new NewsletterSubscriptionResultModel
         {
             Success = true,
             AlreadySubscribed = true,
@@ -30,10 +30,10 @@ public class NewsletterSubscriptionResult
         };
     }
 
-    public static NewsletterSubscriptionResult Failed(
+    public static NewsletterSubscriptionResultModel Failed(
         string message)
     {
-        return new NewsletterSubscriptionResult
+        return new NewsletterSubscriptionResultModel
         {
             Success = false,
             Message = message
