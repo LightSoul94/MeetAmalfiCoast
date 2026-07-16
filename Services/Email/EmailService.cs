@@ -93,4 +93,89 @@ public class EmailService
             subject,
             body);
     }
+
+    // Invia una notifica di nuova prenotazione via email
+    public async Task SendNewBookingNotificationAsync(
+    PlanningAppointment appointment)
+    {
+        string subject = "Nuova prenotazione ricevuta";
+
+        DateTime date = DateTime.Parse(appointment.IsoDate);
+        string formattedDate = date.ToString("dd/MM/yyyy");
+
+        string body = $@"
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset='utf-8'>
+        </head>
+        <body style='margin:0;padding:30px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;'>
+
+            <div style='max-width:650px;margin:auto;background:#ffffff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;'>
+
+                <div style='background:#111111;padding:25px;text-align:center;'>
+                    <h2 style='margin:0;color:#d6ad61;font-size:28px;'>
+                        📅 Nuova prenotazione ricevuta
+                    </h2>
+                </div>
+
+                <div style='padding:30px;'>
+
+                    <p style='margin-top:0;font-size:16px;color:#333;'>
+                        È stata effettuata una nuova prenotazione tramite il sito web.
+                    </p>
+
+                    <div style='background:#fafafa;border:1px solid #e3e3e3;border-radius:8px;padding:20px;margin:25px 0;'>
+
+                        <table style='width:100%;border-collapse:collapse;font-size:15px;'>
+
+                            <tr>
+                                <td style='padding:8px 0;width:140px;'><strong>👤 Cliente</strong></td>
+                                <td>{appointment.Customer}</td>
+                            </tr>
+
+                            <tr>
+                                <td style='padding:8px 0;'><strong>📧 Email</strong></td>
+                                <td>{appointment.CustomerEmail}</td>
+                            </tr>
+
+                            <tr>
+                                <td style='padding:8px 0;'><strong>📅 Data</strong></td>
+                                <td>{formattedDate}</td>
+                            </tr>
+
+                            <tr>
+                                <td style='padding:8px 0;'><strong>🕒 Orario</strong></td>
+                                <td>{appointment.Start} - {appointment.End}</td>
+                            </tr>
+
+                            <tr>
+                                <td style='padding:8px 0;'><strong>🚗 Servizio</strong></td>
+                                <td>{appointment.Title}</td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                    <p style='margin-bottom:0;color:#555;font-size:15px;'>
+                        L'appuntamento è disponibile nel planning di <strong>Meet Amalfi Coast</strong> e su Google Calendar per la consultazione e la gestione.
+                    </p>
+
+                </div>
+
+                <div style='background:#f8f8f8;border-top:1px solid #e5e5e5;padding:18px;text-align:center;font-size:12px;color:#777;'>
+                    Questa è una notifica automatica generata dal sito web di Meet Amalfi Coast.
+                </div>
+
+            </div>
+
+        </body>
+        </html>";
+
+        await SendAsync(
+            _settings.To,
+            subject,
+            body);
+    }
 }
