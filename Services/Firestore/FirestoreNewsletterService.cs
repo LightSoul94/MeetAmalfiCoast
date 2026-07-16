@@ -30,7 +30,7 @@ public class FirestoreNewsletterService
     }
 
     public async Task<NewsletterSubscriptionResult> SubscribeAsync(
-        NewsletterSubscriptionRequest request)
+        NewsletterSubscriptionRequestModel request)
     {
         string normalizedEmail = NormalizeEmail(request.Email);
         string documentId = CreateEmailHash(normalizedEmail);

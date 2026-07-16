@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-public class NewsletterSubscriptionRequest
+public class NewsletterSubscriptionRequestModel
 {
     [Required]
     [EmailAddress]

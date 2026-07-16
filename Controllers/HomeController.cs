@@ -229,7 +229,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SubscribeNewsletter([FromBody] NewsletterSubscriptionRequest request)
+    public async Task<IActionResult> SubscribeNewsletter([FromBody] NewsletterSubscriptionRequestModel request)
     {
         if (!string.IsNullOrWhiteSpace(request.Website))
         {
