@@ -11,8 +11,6 @@ public class PlanningController : Controller
     private readonly ILogger<PlanningController> _logger;
     private readonly StripeService _stripeService;
 
-    const bool bypassStripe = false;
-
     public PlanningController(
         IOptions<BookingSettings> bookingSettings,
         GoogleCalendarService googleCalendarService,
@@ -119,9 +117,8 @@ public class PlanningController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointment appointment)
     {
-        if (bypassStripe)
+        if (_bookingSettings.BypassStripe)
         {
-#pragma warning disable CS0162
             string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
                 appointment,
                 "BYPASS_STRIPE_TEST",
@@ -154,12 +151,9 @@ public class PlanningController : Controller
                 success = true,
                 bypassStripe = true
             });
-#pragma warning restore CS0162
         }
         else
         {
-#pragma warning disable CS0162
-
             try
             {
                 var result = await _stripeService.CreateCheckoutSessionAsync(
@@ -179,7 +173,6 @@ public class PlanningController : Controller
                     message = "Errore durante la creazione della sessione di checkout."
                 });
             }
-#pragma warning restore CS0162
         }
     }
 
