@@ -12,6 +12,7 @@ public class PlanningAppointmentModel
    [JsonPropertyName("customerName")]
     public string Customer { get; set; } = string.Empty;
     public string CustomerEmail { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
 
     public string? GoogleEventId { get; set; }
     public string? GoogleCalendarId { get; set; }

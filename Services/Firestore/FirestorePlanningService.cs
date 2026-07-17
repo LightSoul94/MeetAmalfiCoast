@@ -2,15 +2,18 @@ using MeetAmalfiCoast.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
-
+using MeetAmalfiCoast.Services.Configuration;
 using Google.Cloud.Firestore;
 
 public class FirestorePlanningService
 {
     private readonly FirestoreDb _db;
+    private readonly ApplicationConfigurationService _configuration;
 
-    public FirestorePlanningService(IWebHostEnvironment environment)
+    public FirestorePlanningService(IWebHostEnvironment environment, ApplicationConfigurationService configuration)
     {
+        _configuration = configuration;
+
         string credentialPath = Path.Combine(
             environment.ContentRootPath,
             "Configuration",
@@ -283,16 +286,24 @@ public class FirestorePlanningService
     #region Reminder Email Methods
 
     // Questa regione contiene metodi per gestire le email di promemoria per gli appuntamenti confermati.
-    public async Task<List<MeetAmalfiCoast.Models.PlanningAppointmentModel>> GetAppointmentsForReminderAsync()
+    public async Task<List<PlanningAppointmentModel>>
+        GetAppointmentsForReminderAsync()
     {
-        DateTime tomorrow = DateTime.Today.AddDays(1);
-
-        string tomorrowIsoDate = tomorrow.ToString("yyyy-MM-dd");
-
         Query query = _db.Collection("appointments")
-            .WhereEqualTo("isoDate", tomorrowIsoDate)
             .WhereEqualTo("status", "confirmed")
             .WhereEqualTo("reminderEmailSent", false);
+
+        if (!_configuration.IsDebugMode)
+        {
+            string tomorrowIsoDate = DateTime.Today
+                .AddDays(1)
+                .ToString("yyyy-MM-dd");
+
+            query = query.WhereEqualTo(
+                "isoDate",
+                tomorrowIsoDate
+            );
+        }
 
         QuerySnapshot snapshot = await query.GetSnapshotAsync();
 
@@ -302,7 +313,8 @@ public class FirestorePlanningService
         {
             Dictionary<string, object> data = doc.ToDictionary();
 
-            string customerEmail = data.GetValueOrDefault("customerEmail")?.ToString() ?? "";
+            string customerEmail =
+                data.GetValueOrDefault("customerEmail")?.ToString() ?? "";
 
             if (string.IsNullOrWhiteSpace(customerEmail))
             {
@@ -317,16 +329,22 @@ public class FirestorePlanningService
                 End = data.GetValueOrDefault("end")?.ToString() ?? "",
                 Title = data.GetValueOrDefault("title")?.ToString() ?? "",
 
-                Customer = data.GetValueOrDefault("customerName")?.ToString()
-                           ?? data.GetValueOrDefault("customer")?.ToString()
-                           ?? "",
+                Customer =
+                    data.GetValueOrDefault("customerName")?.ToString()
+                    ?? data.GetValueOrDefault("customer")?.ToString()
+                    ?? "",
 
                 CustomerEmail = customerEmail,
-                GoogleEventId = data.GetValueOrDefault("googleEventId")?.ToString(),
-                GoogleCalendarId = data.GetValueOrDefault("googleCalendarId")?.ToString(),
-                SyncStatus = data.GetValueOrDefault("syncStatus")?.ToString() ?? "synced",
-                SyncError = data.GetValueOrDefault("syncError")?.ToString(),
-                Source = data.GetValueOrDefault("source")?.ToString() ?? "website"
+                GoogleEventId =
+                    data.GetValueOrDefault("googleEventId")?.ToString(),
+                GoogleCalendarId =
+                    data.GetValueOrDefault("googleCalendarId")?.ToString(),
+                SyncStatus =
+                    data.GetValueOrDefault("syncStatus")?.ToString() ?? "synced",
+                SyncError =
+                    data.GetValueOrDefault("syncError")?.ToString(),
+                Source =
+                    data.GetValueOrDefault("source")?.ToString() ?? "website"
             });
         }
 

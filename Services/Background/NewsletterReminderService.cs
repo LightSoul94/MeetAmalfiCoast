@@ -23,13 +23,9 @@ public class NewsletterReminderService : BackgroundService
     protected override async Task ExecuteAsync(
         CancellationToken stoppingToken)
     {
-        await Task.Delay(
-            TimeSpan.FromSeconds(10),
-            stoppingToken
-        );
+        await Task.Delay(_configuration.AppointmentReminderInitialDelay, stoppingToken);
 
-        using PeriodicTimer timer =
-            new(TimeSpan.FromHours(24));
+        using PeriodicTimer timer = new(_configuration.NewsletterReminderCheckInterval);
 
         do
         {

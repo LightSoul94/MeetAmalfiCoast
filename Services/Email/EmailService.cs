@@ -139,6 +139,11 @@ public class EmailService
                             </tr>
 
                             <tr>
+                                <td style='padding:8px 0;'><strong>📞 Telefono</strong></td>
+                                <td>{appointment.CustomerPhone}</td>
+                            </tr>
+
+                            <tr>
                                 <td style='padding:8px 0;'><strong>📅 Data</strong></td>
                                 <td>{formattedDate}</td>
                             </tr>

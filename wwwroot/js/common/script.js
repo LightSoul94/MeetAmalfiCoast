@@ -168,11 +168,12 @@ $("#btnSendRequest").on("click", function () {
   const data = {
     Name: $("#name").val().trim(),
     Email: $("#email").val().trim(),
+    Phone: $("#phone").val().trim(),
     Service: $("#service").val(),
     Message: $("#message").val().trim()
   };
 
-  if (!data.Name || !data.Email || !data.Service || !data.Message) {
+  if (!data.Name || !data.Phone || !data.Service || !data.Message) {
 
     Swal.fire({
       icon: "warning",
@@ -204,6 +205,7 @@ $("#btnSendRequest").on("click", function () {
         $("#email").val("");
         $("#service").val("");
         $("#message").val("");
+        $("#phone").val("");
       }
       else {
 

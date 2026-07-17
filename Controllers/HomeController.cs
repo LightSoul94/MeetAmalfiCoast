@@ -107,7 +107,7 @@ public class HomeController : Controller
     {
         if (model == null ||
             string.IsNullOrWhiteSpace(model.Name) ||
-            string.IsNullOrWhiteSpace(model.Email) ||
+            string.IsNullOrWhiteSpace(model.Phone) ||
             string.IsNullOrWhiteSpace(model.Service) ||
             string.IsNullOrWhiteSpace(model.Message))
         {
@@ -150,6 +150,11 @@ public class HomeController : Controller
                     </tr>
 
                     <tr>
+                        <td><strong>Telefono</strong></td>
+                        <td>{WebUtility.HtmlEncode(model.Phone)}</td>
+                    </tr>
+
+                    <tr>
                         <td><strong>Esperienza richiesta</strong></td>
                         <td>{WebUtility.HtmlEncode(model.Service)}</td>
                     </tr>
@@ -185,7 +190,12 @@ public class HomeController : Controller
 
             message.From = new MailAddress(_smtp.From);
             message.To.Add(_smtp.To);
-            message.ReplyToList.Add(new MailAddress(model.Email));
+
+            // Aggiungi l'indirizzo email del mittente come Reply-To se è stato fornito
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                message.ReplyToList.Add(new MailAddress(model.Email));
+            }
 
             message.Subject = $"Meet Amalfi Coast - {model.Name}";
             message.Body = body;

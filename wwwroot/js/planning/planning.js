@@ -192,7 +192,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
 
                 <div class="appointment-top-bar mb-2">
                     <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label mb-1">Email</label>
+                        <label class="form-label mb-1">Data appuntamento *</label>
                     </div>
                     <div class="d-flex gap-2">
                         <input id="swal-date" class="form-control appointment-date-input" autocomplete="off">
@@ -201,7 +201,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
 
                 <div class="mb-2">
                     <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label mb-1">Nominativo</label>
+                        <label class="form-label mb-1">Nominativo *</label>
                     </div>
 
                     <div class="d-flex gap-2">
@@ -210,12 +210,20 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
                 </div>
 
                 <div class="mb-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label mb-1">Email</label>
+                    <div class="mb-2">
+                        <label class="form-label mb-1">Cellulare *</label>
+                        <input id="swal-customer-phone"
+                              type="tel"
+                              class="form-control"
+                              placeholder="Cellulare">
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <input id="swal-customer-email" class="form-control" placeholder="Email">
+                    <div class="mb-2">
+                        <label class="form-label mb-1">Email</label>
+                        <input id="swal-customer-email"
+                              type="email"
+                              class="form-control"
+                              placeholder="Email">
                     </div>
                 </div>
 
@@ -223,12 +231,12 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
 
                 <div class="row g-2 align-items-end">
                     <div class="col-6">
-                        <label class="form-label mb-1">Ora:</label>
+                        <label class="form-label mb-1">Ora inizio *</label>
                         <input id="swal-start" type="time" class="form-control" value="${startTime}" step="900">
                     </div>
 
                     <div class="col-6">
-                        <label class="form-label mb-1">Ora fine</label>
+                        <label class="form-label mb-1">Ora fine *</label>
                         <input id="swal-end" type="time" class="form-control" value="${addMinutesToTime(startTime, 30)}" step="900">
                     </div>
                 </div>
@@ -246,71 +254,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
                 <hr>
             </div>
             `,
-    //Versione Venere
-    //     html: `
-    // <div class="appointment-form text-start">
-
-    //     <div class="appointment-top-bar">
-    //         <input id="swal-date" class="form-control appointment-date-input" autocomplete="off">
-    //     </div>
-
-    //     <div class="mb-2">
-    //         <div class="d-flex justify-content-between align-items-center">
-    //             <label class="form-label mb-1">Cliente</label>
-    //         </div>
-
-    //         <div class="d-flex gap-2">
-    //             <input id="swal-customer" class="form-control" placeholder="Scrivi per cercare un cliente per nome, cellulare ed email">
-    //             <button type="button" class="btn btn-success">Nuovo</button>
-    //         </div>
-    //     </div>
-
-    //     <hr>
-
-    //     <div class="row g-2 align-items-end">
-    //         <div class="col-3">
-    //             <label class="form-label mb-1">Ora:</label>
-    //             <input id="swal-start" type="time" class="form-control" value="${startTime}" step="900">
-    //         </div>
-
-    //         <div class="col-9">
-    //             <label class="form-label mb-1">Operatore</label>
-    //             <select id="swal-day" class="form-select">
-    //                 <option value="${day}" selected>${day}</option>
-    //             </select>
-    //         </div>
-
-    //         <div class="col-3">
-    //             <label class="form-label mb-1">Ora fine</label>
-    //             <input id="swal-end" type="time" class="form-control" value="${addMinutesToTime(startTime, 30)}" step="900">
-    //         </div>
-
-    //         <div class="col-9">
-    //             <div class="mb-1">
-    //                 <div class="form-check form-check-inline">
-    //                     <input class="form-check-input" type="radio" name="appointmentType" id="swal-type-treatment" value="Trattamento" checked>
-    //                     <label class="form-check-label fw-bold text-decoration-underline" for="swal-type-treatment">Trattamento</label>
-    //                 </div>
-
-    //                 <div class="form-check form-check-inline">
-    //                     <input class="form-check-input" type="radio" name="appointmentType" id="swal-type-product" value="Prodotto">
-    //                     <label class="form-check-label" for="swal-type-product">Prodotto</label>
-    //                 </div>
-    //             </div>
-
-    //             <input id="swal-title" class="form-control" placeholder="Seleziona un trattamento">
-    //         </div>
-    //     </div>
-
-    //     <div class="text-center mt-1">
-    //         <button type="button" class="btn btn-link text-success fw-bold p-0">
-    //             Aggiungi all'appuntamento
-    //         </button>
-    //     </div>
-
-    //     <hr>
-    // </div>
-    // `,
+    
     showCancelButton: true,
     confirmButtonText: "Paga acconto e prenota",
     cancelButtonText: "Annulla",
@@ -329,12 +273,13 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
       const title = $("#swal-title").val().trim();
       const customer = $("#swal-customer").val().trim();
       const customerEmail = $("#swal-customer-email").val().trim();
+      const customerPhone = $("#swal-customer-phone").val().trim();
       const pickedDate = $("#swal-date").datepicker("getDate");
       const isoDate = toIsoDate(pickedDate);
       const start = $("#swal-start").val();
       const end = $("#swal-end").val();
 
-      if (!isoDate || !title || !customer || !start || !customerEmail || !start || !end) {
+      if (!isoDate || !title || !customer || !start || !customerPhone || !start || !end) {
         Swal.showValidationMessage("Compila tutti i campi");
         return false;
       }
@@ -351,7 +296,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
 
         customerName: customer,
         customerEmail,
-        customerPhone: "",
+        customerPhone,
 
         pickupAddress: "",
         dropoffAddress: "",
