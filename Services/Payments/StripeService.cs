@@ -1,9 +1,13 @@
 using Microsoft.Extensions.Options;
+using MeetAmalfiCoast.Services.Configuration;
+using MeetAmalfiCoast.Models;
 using Stripe;
 using Stripe.Checkout;
 
 public class StripeService
 {
+    private readonly ApplicationConfigurationService _configuration;
+    private readonly EmailService _emailService;
     private readonly StripeSettings _stripeSettings;
     private readonly BookingSettings _bookingSettings;
     private readonly FirestorePlanningService _firestorePlanningService;
@@ -11,22 +15,26 @@ public class StripeService
     private readonly ILogger<StripeService> _logger;
 
     public StripeService(
-        IOptions<StripeSettings> stripeSettings,
-        IOptions<BookingSettings> bookingSettings,
-        FirestorePlanningService firestorePlanningService,
-        GoogleCalendarService googleCalendarService,
-        ILogger<StripeService> logger)
+    IOptions<StripeSettings> stripeSettings,
+    IOptions<BookingSettings> bookingSettings,
+    ApplicationConfigurationService configuration,
+    FirestorePlanningService firestorePlanningService,
+    GoogleCalendarService googleCalendarService,
+    EmailService emailService,
+    ILogger<StripeService> logger)
     {
+        _configuration = configuration;
         _stripeSettings = stripeSettings.Value;
         _bookingSettings = bookingSettings.Value;
         _firestorePlanningService = firestorePlanningService;
         _googleCalendarService = googleCalendarService;
+        _emailService = emailService;
         _logger = logger;
 
         StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
     }
 
-    public async Task<object> CreateCheckoutSessionAsync(PlanningAppointment appointment, HttpRequest request)
+    public async Task<object> CreateCheckoutSessionAsync(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment, HttpRequest request)
     {
         string domain = $"{request.Scheme}://{request.Host}";
 
@@ -113,7 +121,7 @@ public class StripeService
             return;
         }
 
-        PlanningAppointment appointment = BuildAppointmentFromSession(session);
+        PlanningAppointmentModel appointment = BuildAppointmentFromSession(session);
 
         string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
             appointment,
@@ -121,6 +129,8 @@ public class StripeService
             _bookingSettings.DepositAmount,
             _bookingSettings.Currency
         );
+
+        await _emailService.SendNewBookingNotificationAsync(appointment);
 
         try
         {
@@ -143,11 +153,11 @@ public class StripeService
         }
     }
 
-    private PlanningAppointment BuildAppointmentFromSession(Session session)
+    private MeetAmalfiCoast.Models.PlanningAppointmentModel BuildAppointmentFromSession(Session session)
     {
         Dictionary<string, string> metadata = session.Metadata;
 
-        return new PlanningAppointment
+        return new MeetAmalfiCoast.Models.PlanningAppointmentModel
         {
             Title = metadata.GetValueOrDefault("title") ?? "Prenotazione",
             Customer = metadata.GetValueOrDefault("customerName") ?? "",

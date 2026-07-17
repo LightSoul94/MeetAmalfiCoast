@@ -1,3 +1,5 @@
+using MeetAmalfiCoast.Services.Configuration;
+
 // Crea il builder per la configurazione dell'applicazione web
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,9 @@ builder.Services.AddControllersWithViews();
 
 
 // Configurazioni
+
+builder.Services.Configure<ApplicationSettings>(
+    builder.Configuration.GetSection("Application"));
 
 builder.Services.Configure<GoogleCalendarSettings>(
     builder.Configuration.GetSection("GoogleCalendar"));
@@ -20,6 +25,8 @@ builder.Services.Configure<BookingSettings>(
     builder.Configuration.GetSection("Booking"));
 
 // Servizi applicativi
+
+builder.Services.AddSingleton<ApplicationConfigurationService>();
 
 builder.Services.AddSingleton<GoogleCalendarService>();
 

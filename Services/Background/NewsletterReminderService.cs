@@ -1,17 +1,23 @@
+using MeetAmalfiCoast.Services.Configuration;
+
 public class NewsletterReminderService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<NewsletterReminderService> _logger;
     private readonly EmailService _emailService;
+    private readonly ApplicationConfigurationService _configuration;
+
 
     public NewsletterReminderService(
         IServiceScopeFactory scopeFactory,
         ILogger<NewsletterReminderService> logger,
-        EmailService emailService)
+        EmailService emailService,
+        ApplicationConfigurationService configuration)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
         _emailService = emailService;
+        _configuration = configuration;
     }
 
     protected override async Task ExecuteAsync(
@@ -86,7 +92,7 @@ public class NewsletterReminderService : BackgroundService
             try
             {
                 string unsubscribeUrl =
-                    $"http://localhost:5087/Home/UnsubscribeNewsletter?token={subscriber.UnsubscribeToken}";
+                    $"{_configuration.BaseUrl}/Home/UnsubscribeNewsletter?token={subscriber.UnsubscribeToken}";
 
                 string emailBody =
                     await templateService

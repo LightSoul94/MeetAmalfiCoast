@@ -1,3 +1,4 @@
+namespace MeetAmalfiCoast.Models;
 using System.Text.Json.Serialization;
 
 public class PlanningAppointmentModel

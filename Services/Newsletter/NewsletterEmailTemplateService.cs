@@ -1,17 +1,20 @@
 using MeetAmalfiCoast.Models;
+using MeetAmalfiCoast.Services.Configuration;
 using System.Net;
 using System.Text;
 
 public class NewsletterEmailTemplateService
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly ApplicationConfigurationService _configuration;
 
-    public NewsletterEmailTemplateService(IWebHostEnvironment environment)
+    public NewsletterEmailTemplateService(IWebHostEnvironment environment, ApplicationConfigurationService configuration)
     {
         _environment = environment;
+        _configuration = configuration;
     }
 
-    public string BuildAppointmentReminder(PlanningAppointment appointment)
+    public string BuildAppointmentReminder(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment)
     {
         string customerName = WebUtility.HtmlEncode(appointment.Customer);
         string appointmentDate = WebUtility.HtmlEncode(appointment.IsoDate);
@@ -70,7 +73,7 @@ public class NewsletterEmailTemplateService
             title: "Welcome to Meet Amalfi Coast",
             content: FormatTextContent(content),
             buttonText: "Discover our services",
-            buttonUrl: "http://localhost:5087/Home/Services",
+            buttonUrl: $"{_configuration.BaseUrl}/Home/Services",
             footerMessage: "You are receiving this email because you subscribed to the Meet Amalfi Coast newsletter.",
             unsubscribeUrl: unsubscribeUrl
         );
@@ -84,7 +87,7 @@ public class NewsletterEmailTemplateService
             title: "The Amalfi Coast is waiting for you",
             content: FormatTextContent(content),
             buttonText: "Plan your journey",
-            buttonUrl: "http://localhost:5087/#contact",
+            buttonUrl: $"{_configuration.BaseUrl}/#contact",
             footerMessage: "You are receiving this email because you subscribed to the Meet Amalfi Coast newsletter.",
             unsubscribeUrl: unsubscribeUrl
         );

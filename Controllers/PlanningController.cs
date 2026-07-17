@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using MeetAmalfiCoast.Models;
+using MeetAmalfiCoast.Services.Configuration;
+using Stripe;
 
 namespace MeetAmalfiCoast.Controllers;
 
@@ -9,6 +12,7 @@ public class PlanningController : Controller
     private readonly GoogleCalendarService _googleCalendarService;
     private readonly FirestorePlanningService _firestorePlanningService;
     private readonly ILogger<PlanningController> _logger;
+    private readonly EmailService _emailService;
     private readonly StripeService _stripeService;
 
     public PlanningController(
@@ -16,12 +20,14 @@ public class PlanningController : Controller
         GoogleCalendarService googleCalendarService,
         FirestorePlanningService firestorePlanningService,
         ILogger<PlanningController> logger,
+        EmailService emailService,
         StripeService stripeService)
     {
         _bookingSettings = bookingSettings.Value;
         _googleCalendarService = googleCalendarService;
         _firestorePlanningService = firestorePlanningService;
         _logger = logger;
+        _emailService = emailService;
         _stripeService = stripeService;
     }
 
@@ -115,7 +121,7 @@ public class PlanningController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointment appointment)
+    public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointmentModel appointment)
     {
         if (_bookingSettings.BypassStripe)
         {
@@ -125,6 +131,18 @@ public class PlanningController : Controller
                 _bookingSettings.DepositAmount,
                 _bookingSettings.Currency
             );
+
+            try
+            {
+                await _emailService.SendNewBookingNotificationAsync(appointment);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Appuntamento creato, ma email al proprietario non inviata"
+                );
+            }
 
             try
             {

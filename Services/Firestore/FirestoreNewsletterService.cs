@@ -2,15 +2,19 @@ using System.Security.Cryptography;
 using System.Text;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
+using MeetAmalfiCoast.Services.Configuration;
 
 public class FirestoreNewsletterService
 {
     private const string CollectionName = "newsletterSubscribers";
 
     private readonly FirestoreDb _firestoreDb;
+    private readonly ApplicationConfigurationService _configuration;
 
-    public FirestoreNewsletterService(IWebHostEnvironment environment)
+    public FirestoreNewsletterService(IWebHostEnvironment environment, ApplicationConfigurationService configuration)
     {
+        _configuration = configuration;
+
         string credentialPath = Path.Combine(
             environment.ContentRootPath,
             "Configuration",
@@ -125,7 +129,7 @@ public class FirestoreNewsletterService
                 subscriber.LastReminderEmailSentAt?.ToDateTime()
                 ?? subscriber.SubscribedAt.ToDateTime();
 
-            if (referenceDate.AddMonths(1) <= utcNow)
+            if (_configuration.IsDebugMode || referenceDate.AddMonths(1) <= utcNow)
             {
                 subscribers.Add(subscriber);
             }

@@ -5,6 +5,7 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Microsoft.Extensions.Options;
+using MeetAmalfiCoast.Models;
 
 public class GoogleCalendarService
 {
@@ -60,7 +61,7 @@ public class GoogleCalendarService
         }
     }
 
-    public async Task<string> CreateEventAsync(PlanningAppointment appointment)
+    public async Task<string> CreateEventAsync(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment)
     {
         CalendarService service = await CreateCalendarServiceAsync();
 

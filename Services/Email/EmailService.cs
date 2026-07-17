@@ -35,7 +35,7 @@ public class EmailService
     }
 
     // Invia un promemoria di appuntamento via email
-    public async Task SendAppointmentReminderAsync(PlanningAppointmentModel appointment)
+    public async Task SendAppointmentReminderAsync(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment)
     {
         string subject = "Appointment Reminder - Meet Amalfi Coast";
 
@@ -95,8 +95,7 @@ public class EmailService
     }
 
     // Invia una notifica di nuova prenotazione via email
-    public async Task SendNewBookingNotificationAsync(
-    PlanningAppointmentModel appointment)
+    public async Task SendNewBookingNotificationAsync(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment)
     {
         string subject = "Nuova prenotazione ricevuta";
 

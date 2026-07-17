@@ -1,16 +1,20 @@
 using MeetAmalfiCoast.Models;
+using MeetAmalfiCoast.Services.Configuration;
 
 public class AppointmentReminderService : BackgroundService
 {
+    private readonly ApplicationConfigurationService _configuration;
     private readonly FirestorePlanningService _firestorePlanningService;
     private readonly EmailService _emailService;
     private readonly ILogger<AppointmentReminderService> _logger;
 
     public AppointmentReminderService(
+        ApplicationConfigurationService configuration,
         FirestorePlanningService firestorePlanningService,
         EmailService emailService,
         ILogger<AppointmentReminderService> logger)
     {
+        _configuration = configuration;
         _firestorePlanningService = firestorePlanningService;
         _emailService = emailService;
         _logger = logger;
@@ -19,7 +23,7 @@ public class AppointmentReminderService : BackgroundService
     // Esegue il servizio in background per inviare promemoria appuntamenti via email.
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+        await Task.Delay(_configuration.AppointmentReminderInitialDelay, stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -32,7 +36,7 @@ public class AppointmentReminderService : BackgroundService
                 _logger.LogError(ex, "Errore durante l'invio dei promemoria appuntamento.");
             }
 
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            await Task.Delay(_configuration.AppointmentReminderCheckInterval, stoppingToken);
         }
     }
 
@@ -50,7 +54,6 @@ public class AppointmentReminderService : BackgroundService
             }
 
             await _emailService.SendAppointmentReminderAsync(appointment);
-            await _emailService.SendNewBookingNotificationAsync(appointment);
 
             await _firestorePlanningService.MarkReminderEmailAsSentAsync(appointment.Id);
 

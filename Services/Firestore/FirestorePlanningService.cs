@@ -1,6 +1,8 @@
+using MeetAmalfiCoast.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
+
 using Google.Cloud.Firestore;
 
 public class FirestorePlanningService
@@ -26,20 +28,20 @@ public class FirestorePlanningService
         }.Build();
     }
 
-    public async Task<List<PlanningAppointment>> GetPendingAppointmentsAsync()
+    public async Task<List<MeetAmalfiCoast.Models.PlanningAppointmentModel>> GetPendingAppointmentsAsync()
     {
         Query query = _db.Collection("appointments")
             .WhereEqualTo("syncStatus", "pending");
 
         QuerySnapshot snapshot = await query.GetSnapshotAsync();
 
-        List<PlanningAppointment> appointments = new();
+        List<MeetAmalfiCoast.Models.PlanningAppointmentModel> appointments = new();
 
         foreach (DocumentSnapshot doc in snapshot.Documents)
         {
             Dictionary<string, object> data = doc.ToDictionary();
 
-            appointments.Add(new PlanningAppointment
+            appointments.Add(new MeetAmalfiCoast.Models.PlanningAppointmentModel
             {
                 Id = doc.Id,
                 IsoDate = data.GetValueOrDefault("isoDate")?.ToString() ?? "",
@@ -228,7 +230,7 @@ public class FirestorePlanningService
     }
 
     public async Task<string> CreatePaidAppointmentAsync(
-    PlanningAppointment appointment,
+    MeetAmalfiCoast.Models.PlanningAppointmentModel appointment,
     string stripeSessionId,
     long depositAmount,
     string currency)
@@ -281,7 +283,7 @@ public class FirestorePlanningService
     #region Reminder Email Methods
 
     // Questa regione contiene metodi per gestire le email di promemoria per gli appuntamenti confermati.
-    public async Task<List<PlanningAppointment>> GetAppointmentsForReminderAsync()
+    public async Task<List<MeetAmalfiCoast.Models.PlanningAppointmentModel>> GetAppointmentsForReminderAsync()
     {
         DateTime tomorrow = DateTime.Today.AddDays(1);
 
@@ -294,7 +296,7 @@ public class FirestorePlanningService
 
         QuerySnapshot snapshot = await query.GetSnapshotAsync();
 
-        List<PlanningAppointment> appointments = new();
+        List<PlanningAppointmentModel> appointments = new();
 
         foreach (DocumentSnapshot doc in snapshot.Documents)
         {
@@ -307,7 +309,7 @@ public class FirestorePlanningService
                 continue;
             }
 
-            appointments.Add(new PlanningAppointment
+            appointments.Add(new PlanningAppointmentModel
             {
                 Id = doc.Id,
                 IsoDate = data.GetValueOrDefault("isoDate")?.ToString() ?? "",
