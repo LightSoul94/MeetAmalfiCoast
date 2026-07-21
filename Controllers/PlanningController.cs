@@ -8,6 +8,7 @@ namespace MeetAmalfiCoast.Controllers;
 
 public class PlanningController : Controller
 {
+    private readonly ApplicationSettings _settings;
     private readonly BookingSettings _bookingSettings;
     private readonly GoogleCalendarService _googleCalendarService;
     private readonly FirestorePlanningService _firestorePlanningService;
@@ -16,6 +17,7 @@ public class PlanningController : Controller
     private readonly StripeService _stripeService;
 
     public PlanningController(
+        IOptions<ApplicationSettings> applicationOptions,
         IOptions<BookingSettings> bookingSettings,
         GoogleCalendarService googleCalendarService,
         FirestorePlanningService firestorePlanningService,
@@ -23,6 +25,7 @@ public class PlanningController : Controller
         EmailService emailService,
         StripeService stripeService)
     {
+        _settings = applicationOptions.Value;
         _bookingSettings = bookingSettings.Value;
         _googleCalendarService = googleCalendarService;
         _firestorePlanningService = firestorePlanningService;
@@ -49,20 +52,20 @@ public class PlanningController : Controller
     {
         if (string.IsNullOrWhiteSpace(code))
         {
-            return RedirectToAction("Planning", "Home");
+            return RedirectToAction("Index", "Planning");
         }
 
         try
         {
             await _googleCalendarService.SaveTokenAsync(code);
 
-            return RedirectToAction("Planning", "Home");
+            return RedirectToAction("Index", "Planning");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Errore durante il collegamento a Google Calendar");
 
-            return RedirectToAction("Planning", "Home");
+            return RedirectToAction("Index", "Planning");
         }
     }
 
@@ -123,7 +126,7 @@ public class PlanningController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointmentModel appointment)
     {
-        if (_bookingSettings.BypassStripe)
+        if (_settings.BypassStripe)
         {
             string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
                 appointment,
