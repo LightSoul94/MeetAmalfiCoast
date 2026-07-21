@@ -37,6 +37,7 @@ public class HomeController : Controller
         _emailService = emailService;
     }
 
+    [Route("")]
     public IActionResult Index()
     {
         var heroPath = Path.Combine(
@@ -72,32 +73,38 @@ public class HomeController : Controller
         return View(model);
     }
 
-    public IActionResult Gallery()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    public IActionResult Terms()
-    {
-        return View();
-    }
-
-    public IActionResult Cookies()
-    {
-        return View();
-    }
-
+    [Route("about")]
     public IActionResult About()
     {
         return View();
     }
 
+    [Route("services")]
     public IActionResult Services()
+    {
+        return View();
+    }
+
+    [Route("gallery")]
+    public IActionResult Gallery()
+    {
+        return View();
+    }
+
+    [Route("privacy")]
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [Route("terms")]
+    public IActionResult Terms()
+    {
+        return View();
+    }
+
+    [Route("cookies")]
+    public IActionResult Cookies()
     {
         return View();
     }

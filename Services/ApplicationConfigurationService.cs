@@ -17,7 +17,7 @@ public class ApplicationConfigurationService
     public string BaseUrl =>
         _settings.Debug
             ? "http://localhost:5087"
-            : "https://meetamalficoast.com";
+            : "https://meetamalficoasts.com";
 
     public int AppointmentReminderLeadDays =>
         _settings.Debug

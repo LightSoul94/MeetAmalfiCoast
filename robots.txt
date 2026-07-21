@@ -1,0 +1,9 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /Planning/StripeWebhook
+Disallow: /Planning/GoogleCalendarCallback
+Disallow: /Planning/ResetPlanningFromGoogleCalendar
+
+Sitemap: https://meetamalficoasts.com/sitemap.xml
