@@ -1,14 +1,12 @@
 @{
     ViewData["Title"] = "About Us";
+    ViewData["Description"] = "Learn more about Meet Amalfi Coasts and our passion for providing premium private transfers and personalized experiences in Southern Italy.";
 }
 
 @section Scripts {
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <link rel="stylesheet"
-          href="~/css/about.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
 }
 
 <main class="about-page">
@@ -52,14 +50,11 @@
                     </p>
 
                     <div class="about-actions mt-5">
-                        <a asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="contact"
-                           class="btn btn-outline-gold">
+                        <a asp-controller="Home" asp-action="Index" asp-fragment="contact" class="btn btn-outline-gold">
                             Contact us
                         </a>
 
-                        <a href="/Planning" class="btn btn-gold">
+                        <a asp-controller="Planning" asp-action="Index" class="btn btn-gold">
                             Book now
                         </a>
                     </div>

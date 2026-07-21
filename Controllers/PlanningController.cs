@@ -34,6 +34,8 @@ public class PlanningController : Controller
         _stripeService = stripeService;
     }
 
+    [HttpGet]
+    [Route("planning")]
     public IActionResult Index()
     {
         return View();

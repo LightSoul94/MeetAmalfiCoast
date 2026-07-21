@@ -67,24 +67,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "planning",
-    pattern: "planning",
-    defaults: new
-    {
-        controller = "Planning",
-        action = "Index"
-    });
-
-app.MapControllerRoute(
-    name: "gallery",
-    pattern: "gallery",
-    defaults: new
-    {
-        controller = "Home",
-        action = "Gallery"
-    });
-
-app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 

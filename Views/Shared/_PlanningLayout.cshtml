@@ -1,3 +1,20 @@
+@{
+    var pageTitle = ViewData["Title"]?.ToString()
+        ?? "Meet Amalfi Coast";
+
+    var pageDescription = ViewData["Description"]?.ToString()
+        ?? "Book your private transfer or tour on the Amalfi Coast.";
+
+    var ogImage = ViewData["OgImage"]?.ToString()
+        ?? "/images/social/meet-amalfi-coasts.jpg";
+
+    var pageUrl =
+        $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+
+    var ogImageUrl =
+        $"{Context.Request.Scheme}://{Context.Request.Host}{ogImage}";
+}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,13 +23,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>@ViewData["Title"] - Meet Amalfi Coast</title>
+    <title>@pageTitle</title>
+
+    <meta name="description" content="@pageDescription" />
+    <link rel="canonical" href="@pageUrl" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Meet Amalfi Coast" />
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:description" content="@pageDescription" />
+    <meta property="og:url" content="@pageUrl" />
+    <meta property="og:image" content="@ogImageUrl" />
+    <meta property="og:image:alt" content="Meet Amalfi Coast - Private tours and transfers" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@pageTitle" />
+    <meta name="twitter:description" content="@pageDescription" />
+    <meta name="twitter:image" content="@ogImageUrl" />
 
     <link rel="icon" href="~/favicon.ico" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/styles.css" />
-    <link rel="stylesheet" href="~/css/planning-layout.css" />
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/planning-layout.css" asp-append-version="true" />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -46,7 +80,9 @@
                         </li>
 
                         <li class="nav-item ms-lg-2">
-                            <a href="/Planning" class="btn btn-gold">BOOK NOW</a>
+                            <a asp-controller="Planning"
+   asp-action="Index"
+   class="btn btn-gold">BOOK NOW</a>
                         </li>
                     </ul>
                 </div>
