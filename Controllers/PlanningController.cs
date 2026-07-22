@@ -227,4 +227,34 @@ public class PlanningController : Controller
             return BadRequest();
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CleanupOldAppointments()
+    {
+        try
+        {
+            int deletedCount =
+                await _firestorePlanningService.DeleteOldAppointmentsAsync();
+
+            return Ok(new
+            {
+                success = true,
+                deletedCount,
+                message = $"{deletedCount} appuntamenti eliminati."
+            });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                exception,
+                "Errore durante la pulizia manuale degli appuntamenti Firestore"
+            );
+
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "Errore durante la pulizia degli appuntamenti."
+            });
+        }
+    }
 }

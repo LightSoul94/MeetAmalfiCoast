@@ -364,4 +364,43 @@ public class FirestorePlanningService
     });
     }
     #endregion
+
+    public async Task<int> DeleteOldAppointmentsAsync()
+    {
+        DateTime limitDate = DateTime.Today.AddDays(-_configuration.FirestoreAppointmentRetentionDays);
+
+        string limitIsoDate = limitDate.ToString("yyyy-MM-dd");
+
+        QuerySnapshot snapshot = await _db.Collection("appointments")
+            .WhereLessThanOrEqualTo("isoDate", limitIsoDate)
+            .GetSnapshotAsync();
+
+        WriteBatch batch = _db.StartBatch();
+
+        int batchCounter = 0;
+        int deletedCount = 0;
+
+        foreach (DocumentSnapshot document in snapshot.Documents)
+        {
+            batch.Delete(document.Reference);
+
+            batchCounter++;
+            deletedCount++;
+
+            if (batchCounter >= 450)
+            {
+                await batch.CommitAsync();
+
+                batch = _db.StartBatch();
+                batchCounter = 0;
+            }
+        }
+
+        if (batchCounter > 0)
+        {
+            await batch.CommitAsync();
+        }
+
+        return deletedCount;
+    }
 }

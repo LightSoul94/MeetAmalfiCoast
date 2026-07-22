@@ -1,4 +1,5 @@
 using MeetAmalfiCoast.Services.Configuration;
+using MeetAmalfiCoast.Services.BackgroundServices;
 
 // Crea il builder per la configurazione dell'applicazione web
 var builder = WebApplication.CreateBuilder(args);
@@ -39,16 +40,16 @@ builder.Services.AddSingleton<NewsletterEmailTemplateService>();
 builder.Services.AddSingleton<EmailService>();
 
 builder.Services.AddSingleton<StripeService>();
-
     
 // Hosted services
+
+builder.Services.AddHostedService<FirestoreAppointmentCleanupService>();
 
 builder.Services.AddHostedService<GoogleCalendarSyncWorkerService>();
 
 builder.Services.AddHostedService<AppointmentReminderService>();
 
 builder.Services.AddHostedService<NewsletterReminderService>();
-
 
 var app = builder.Build();
 

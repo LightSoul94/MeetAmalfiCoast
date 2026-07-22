@@ -43,4 +43,9 @@ public class ApplicationConfigurationService
         _settings.Debug
             ? 0
             : 30;
+
+    public int FirestoreAppointmentRetentionDays =>
+    _settings.Debug
+        ? 1
+        : 365;
 }
