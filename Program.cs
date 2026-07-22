@@ -31,6 +31,8 @@ builder.Services.AddSingleton<ApplicationConfigurationService>();
 
 builder.Services.AddSingleton<GoogleCalendarService>();
 
+builder.Services.AddSingleton<GoogleCalendarAppointmentParserService>();
+
 builder.Services.AddSingleton<FirestorePlanningService>();
 
 builder.Services.AddSingleton<FirestoreNewsletterService>();

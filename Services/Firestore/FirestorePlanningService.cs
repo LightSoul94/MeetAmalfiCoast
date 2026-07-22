@@ -152,6 +152,10 @@ public class FirestorePlanningService
     public async Task UpsertAppointmentFromGoogleAsync(
     string googleEventId,
     string title,
+    string customerName,
+    string customerEmail,
+    string customerPhone,
+    string notes,
     DateTime startDateTime,
     DateTime endDateTime)
     {
@@ -168,9 +172,15 @@ public class FirestorePlanningService
         Dictionary<string, object?> data = new()
             {
                 { "title", title },
+                { "customerName", customerName },
+                { "customerEmail", customerEmail },
+                { "customerPhone", customerPhone },
+                { "notes", notes },
+
                 { "isoDate", isoDate },
                 { "start", start },
                 { "end", end },
+
                 { "googleEventId", googleEventId },
                 { "googleCalendarId", "primary" },
                 { "syncStatus", "synced" },
@@ -186,12 +196,8 @@ public class FirestorePlanningService
             return;
         }
 
-        data.Add("customerName", "Google Calendar");
-        data.Add("customerEmail", "");
-        data.Add("customerPhone", "");
         data.Add("pickupAddress", "");
         data.Add("dropoffAddress", "");
-        data.Add("notes", "");
         data.Add("status", "confirmed");
 
         data.Add("reminderEmailSent", false);

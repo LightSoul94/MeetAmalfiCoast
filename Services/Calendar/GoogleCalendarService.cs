@@ -12,18 +12,20 @@ public class GoogleCalendarService
     private readonly GoogleCalendarSettings _settings;
     private readonly FirestorePlanningService _firestorePlanningService;
     private readonly ILogger<GoogleCalendarService> _logger;
-
+    private readonly GoogleCalendarAppointmentParserService _googleCalendarAppointmentParserService;
     private readonly string _tokenFilePath;
     private readonly string _syncTokenFilePath;
 
     public GoogleCalendarService(
         IOptions<GoogleCalendarSettings> settings,
         FirestorePlanningService firestorePlanningService,
-        ILogger<GoogleCalendarService> logger)
+        ILogger<GoogleCalendarService> logger,
+        GoogleCalendarAppointmentParserService googleCalendarAppointmentParserService)
     {
         _settings = settings.Value;
         _firestorePlanningService = firestorePlanningService;
         _logger = logger;
+        _googleCalendarAppointmentParserService = googleCalendarAppointmentParserService;
 
         _tokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-token.json");
         _syncTokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-sync-token.txt");
@@ -131,9 +133,18 @@ public class GoogleCalendarService
                 continue;
             }
 
+            var appointment =
+                _googleCalendarAppointmentParserService.Parse(
+                    googleEvent.Summary,
+                    googleEvent.Description);
+
             await _firestorePlanningService.UpsertAppointmentFromGoogleAsync(
                 googleEventId: googleEvent.Id,
                 title: googleEvent.Summary ?? "Appuntamento",
+                customerName: appointment.CustomerName,
+                customerEmail: appointment.CustomerEmail,
+                customerPhone: appointment.CustomerPhone,
+                notes: appointment.Notes,
                 startDateTime: startDateTime.Value,
                 endDateTime: endDateTime.Value
             );
@@ -310,9 +321,18 @@ public class GoogleCalendarService
                 continue;
             }
 
+            var appointment =
+                _googleCalendarAppointmentParserService.Parse(
+                    googleEvent.Summary,
+                    googleEvent.Description);
+
             await _firestorePlanningService.UpsertAppointmentFromGoogleAsync(
                 googleEventId: googleEvent.Id,
                 title: googleEvent.Summary ?? "Appuntamento",
+                customerName: appointment.CustomerName,
+                customerEmail: appointment.CustomerEmail,
+                customerPhone: appointment.CustomerPhone,
+                notes: appointment.Notes,
                 startDateTime: startDateTime.Value,
                 endDateTime: endDateTime.Value
             );
