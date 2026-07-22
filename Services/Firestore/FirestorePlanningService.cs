@@ -409,4 +409,64 @@ public class FirestorePlanningService
 
         return deletedCount;
     }
+
+    // Metodo per ottenere un appuntamento in base all'ID dell'evento di Google Calendar
+    public async Task<PlanningAppointmentModel?> GetAppointmentByGoogleEventIdAsync(
+    string googleEventId)
+    {
+        Query query = _db.Collection("appointments")
+            .WhereEqualTo("googleEventId", googleEventId)
+            .Limit(1);
+
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+
+        if (snapshot.Documents.Count == 0)
+        {
+            return null;
+        }
+
+        DocumentSnapshot doc = snapshot.Documents[0];
+        Dictionary<string, object> data = doc.ToDictionary();
+
+        return new PlanningAppointmentModel
+        {
+            Id = doc.Id,
+            Title = data.GetValueOrDefault("title")?.ToString() ?? "",
+
+            Customer =
+                data.GetValueOrDefault("customerName")?.ToString()
+                ?? data.GetValueOrDefault("customer")?.ToString()
+                ?? "",
+
+            CustomerEmail =
+                data.GetValueOrDefault("customerEmail")?.ToString() ?? "",
+
+            CustomerPhone =
+                data.GetValueOrDefault("customerPhone")?.ToString() ?? "",
+
+            IsoDate =
+                data.GetValueOrDefault("isoDate")?.ToString() ?? "",
+
+            Start =
+                data.GetValueOrDefault("start")?.ToString() ?? "",
+
+            End =
+                data.GetValueOrDefault("end")?.ToString() ?? "",
+
+            GoogleEventId =
+                data.GetValueOrDefault("googleEventId")?.ToString(),
+
+            GoogleCalendarId =
+                data.GetValueOrDefault("googleCalendarId")?.ToString(),
+
+            SyncStatus =
+                data.GetValueOrDefault("syncStatus")?.ToString() ?? "synced",
+
+            SyncError =
+                data.GetValueOrDefault("syncError")?.ToString(),
+
+            Source =
+                data.GetValueOrDefault("source")?.ToString() ?? "website"
+        };
+    }
 }

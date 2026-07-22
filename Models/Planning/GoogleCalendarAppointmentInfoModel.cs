@@ -1,6 +1,6 @@
 namespace MeetAmalfiCoast.Models;
 
-public class GoogleCalendarAppointmentInfo
+public class GoogleCalendarAppointmentInfoModel
 {
     public string CustomerName { get; init; } = string.Empty;
 

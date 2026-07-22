@@ -15,17 +15,20 @@ public class GoogleCalendarService
     private readonly GoogleCalendarAppointmentParserService _googleCalendarAppointmentParserService;
     private readonly string _tokenFilePath;
     private readonly string _syncTokenFilePath;
+    private readonly EmailService _emailService;
 
     public GoogleCalendarService(
         IOptions<GoogleCalendarSettings> settings,
         FirestorePlanningService firestorePlanningService,
         ILogger<GoogleCalendarService> logger,
-        GoogleCalendarAppointmentParserService googleCalendarAppointmentParserService)
+        GoogleCalendarAppointmentParserService googleCalendarAppointmentParserService,
+        EmailService emailService)
     {
         _settings = settings.Value;
         _firestorePlanningService = firestorePlanningService;
         _logger = logger;
         _googleCalendarAppointmentParserService = googleCalendarAppointmentParserService;
+        _emailService = emailService;
 
         _tokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-token.json");
         _syncTokenFilePath = Path.Combine(AppContext.BaseDirectory, "google-calendar-sync-token.txt");
@@ -113,14 +116,30 @@ public class GoogleCalendarService
 
             if (googleEvent.Status == "cancelled")
             {
-                await _firestorePlanningService.DeleteAppointmentByGoogleEventIdAsync(
-                    googleEvent.Id
-                );
+                PlanningAppointmentModel? cancelledAppointment  =
+                    await _firestorePlanningService
+                        .GetAppointmentByGoogleEventIdAsync(googleEvent.Id);
 
-                _logger.LogInformation(
-                    "Evento eliminato da Firestore. GoogleEventId: {GoogleEventId}",
-                    googleEvent.Id
-                );
+                if (cancelledAppointment != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(cancelledAppointment.CustomerEmail))
+                    {
+                        await _emailService.SendAppointmentCancelledEmailAsync(
+                            cancelledAppointment);
+
+                        _logger.LogInformation(
+                            "Email di cancellazione inviata a {CustomerEmail}. GoogleEventId: {GoogleEventId}",
+                            cancelledAppointment.CustomerEmail,
+                            googleEvent.Id);
+                    }
+
+                    await _firestorePlanningService
+                        .DeleteAppointmentByGoogleEventIdAsync(googleEvent.Id);
+
+                    _logger.LogInformation(
+                        "Evento eliminato da Firestore. GoogleEventId: {GoogleEventId}",
+                        googleEvent.Id);
+                }
 
                 continue;
             }
@@ -132,6 +151,20 @@ public class GoogleCalendarService
             {
                 continue;
             }
+
+            PlanningAppointmentModel? existingAppointment = await _firestorePlanningService.GetAppointmentByGoogleEventIdAsync(googleEvent.Id);
+
+            string newIsoDate = startDateTime.Value.ToString("yyyy-MM-dd");
+            string newStart = startDateTime.Value.ToString("HH:mm");
+            string newEnd = endDateTime.Value.ToString("HH:mm");
+
+            bool appointmentRescheduled =
+                existingAppointment != null &&
+                (
+                    existingAppointment.IsoDate != newIsoDate ||
+                    existingAppointment.Start != newStart ||
+                    existingAppointment.End != newEnd
+                );
 
             var appointment =
                 _googleCalendarAppointmentParserService.Parse(
@@ -148,6 +181,38 @@ public class GoogleCalendarService
                 startDateTime: startDateTime.Value,
                 endDateTime: endDateTime.Value
             );
+
+            if (appointmentRescheduled && existingAppointment != null && !string.IsNullOrWhiteSpace(existingAppointment.CustomerEmail))
+            {
+                PlanningAppointmentModel updatedAppointment = new()
+                {
+                    Id = existingAppointment.Id,
+                    Title = googleEvent.Summary ?? existingAppointment.Title,
+                    Customer = string.IsNullOrWhiteSpace(appointment.CustomerName)
+                        ? existingAppointment.Customer
+                        : appointment.CustomerName,
+                    CustomerEmail = existingAppointment.CustomerEmail,
+                    CustomerPhone = string.IsNullOrWhiteSpace(appointment.CustomerPhone)
+                        ? existingAppointment.CustomerPhone
+                        : appointment.CustomerPhone,
+                    IsoDate = newIsoDate,
+                    Start = newStart,
+                    End = newEnd,
+                    GoogleEventId = googleEvent.Id,
+                    GoogleCalendarId = "primary",
+                    SyncStatus = "synced",
+                    Source = "google"
+                };
+
+                await _emailService.SendAppointmentRescheduledEmailAsync(
+                    existingAppointment,
+                    updatedAppointment);
+
+                _logger.LogInformation(
+                    "Email di modifica appuntamento inviata a {CustomerEmail}. GoogleEventId: {GoogleEventId}",
+                    existingAppointment.CustomerEmail,
+                    googleEvent.Id);
+            }
 
             _logger.LogInformation(
                 "Evento aggiornato da Google Calendar verso Firestore. GoogleEventId: {GoogleEventId}",

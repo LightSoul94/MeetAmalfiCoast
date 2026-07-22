@@ -1,10 +1,47 @@
 using MeetAmalfiCoast.Models;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 
 public class EmailService
 {
+    private static readonly CultureInfo EnglishCulture =
+        CultureInfo.GetCultureInfo("en-US");
+
+    private static readonly CultureInfo ItalianCulture =
+        CultureInfo.GetCultureInfo("it-IT");
+
+    private static string FormatEnglishDate(string isoDate)
+    {
+        return DateTime.Parse(isoDate)
+            .ToString("dddd, MMMM d, yyyy", EnglishCulture);
+    }
+
+    private static string FormatEnglishTime(string time)
+    {
+        return DateTime.ParseExact(
+                time,
+                "HH:mm",
+                CultureInfo.InvariantCulture)
+            .ToString("h:mm tt", EnglishCulture);
+    }
+
+    private static string FormatItalianDate(string isoDate)
+    {
+        return DateTime.Parse(isoDate)
+            .ToString("dddd d MMMM yyyy", ItalianCulture);
+    }
+
+    private static string FormatItalianTime(string time)
+    {
+        return DateTime.ParseExact(
+                time,
+                "HH:mm",
+                CultureInfo.InvariantCulture)
+            .ToString("HH:mm", ItalianCulture);
+    }
+
     private readonly SmtpSettings _settings;
 
     public EmailService(IOptions<SmtpSettings> settings)
@@ -55,12 +92,12 @@ public class EmailService
                         <table style='border-collapse:collapse;margin-top:20px;'>
                             <tr>
                                 <td><strong>Date:</strong></td>
-                                <td>{appointment.IsoDate}</td>
+                                <td>{FormatEnglishDate(appointment.IsoDate)}</td>
                             </tr>
 
                             <tr>
                                 <td><strong>Time:</strong></td>
-                                <td>{appointment.Start} - {appointment.End}</td>
+                                <td>{FormatEnglishTime(appointment.Start)} - {FormatEnglishTime(appointment.End)}</td>
                             </tr>
 
                             <tr>
@@ -94,91 +131,246 @@ public class EmailService
             body);
     }
 
-    // Invia una notifica di nuova prenotazione via email
+    // Invia una notifica di nuova prenotazione via email al cliente proprietario del sito
     public async Task SendNewBookingNotificationAsync(MeetAmalfiCoast.Models.PlanningAppointmentModel appointment)
     {
         string subject = "Nuova prenotazione ricevuta";
 
-        DateTime date = DateTime.Parse(appointment.IsoDate);
-        string formattedDate = date.ToString("dd/MM/yyyy");
-
         string body = $@"
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset='utf-8'>
-        </head>
-        <body style='margin:0;padding:30px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;'>
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset='utf-8'>
+                </head>
+                <body style='margin:0;padding:30px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;'>
 
-            <div style='max-width:650px;margin:auto;background:#ffffff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;'>
+                    <div style='max-width:650px;margin:auto;background:#ffffff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;'>
 
-                <div style='background:#111111;padding:25px;text-align:center;'>
-                    <h2 style='margin:0;color:#d6ad61;font-size:28px;'>
-                        📅 Nuova prenotazione ricevuta
-                    </h2>
-                </div>
+                        <div style='background:#111111;padding:25px;text-align:center;'>
+                            <h2 style='margin:0;color:#d6ad61;font-size:28px;'>
+                                📅 Nuova prenotazione ricevuta
+                            </h2>
+                        </div>
 
-                <div style='padding:30px;'>
+                        <div style='padding:30px;'>
 
-                    <p style='margin-top:0;font-size:16px;color:#333;'>
-                        È stata effettuata una nuova prenotazione tramite il sito web.
-                    </p>
+                            <p style='margin-top:0;font-size:16px;color:#333;'>
+                                È stata effettuata una nuova prenotazione tramite il sito web.
+                            </p>
 
-                    <div style='background:#fafafa;border:1px solid #e3e3e3;border-radius:8px;padding:20px;margin:25px 0;'>
+                            <div style='background:#fafafa;border:1px solid #e3e3e3;border-radius:8px;padding:20px;margin:25px 0;'>
 
-                        <table style='width:100%;border-collapse:collapse;font-size:15px;'>
+                                <table style='width:100%;border-collapse:collapse;font-size:15px;'>
 
-                            <tr>
-                                <td style='padding:8px 0;width:140px;'><strong>👤 Cliente</strong></td>
-                                <td>{appointment.Customer}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;width:140px;'><strong>👤 Cliente</strong></td>
+                                        <td>{appointment.Customer}</td>
+                                    </tr>
 
-                            <tr>
-                                <td style='padding:8px 0;'><strong>📧 Email</strong></td>
-                                <td>{appointment.CustomerEmail}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;'><strong>📧 Email</strong></td>
+                                        <td>{appointment.CustomerEmail}</td>
+                                    </tr>
 
-                            <tr>
-                                <td style='padding:8px 0;'><strong>📞 Telefono</strong></td>
-                                <td>{appointment.CustomerPhone}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;'><strong>📞 Telefono</strong></td>
+                                        <td>{appointment.CustomerPhone}</td>
+                                    </tr>
 
-                            <tr>
-                                <td style='padding:8px 0;'><strong>📅 Data</strong></td>
-                                <td>{formattedDate}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;'><strong>📅 Data</strong></td>
+                                        <td>{FormatItalianDate(appointment.IsoDate)}</td>
+                                    </tr>
 
-                            <tr>
-                                <td style='padding:8px 0;'><strong>🕒 Orario</strong></td>
-                                <td>{appointment.Start} - {appointment.End}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;'><strong>🕒 Orario</strong></td>
+                                        <td>{FormatItalianTime(appointment.Start)} - {FormatItalianTime(appointment.End)}</td>
+                                    </tr>
 
-                            <tr>
-                                <td style='padding:8px 0;'><strong>🚗 Servizio</strong></td>
-                                <td>{appointment.Title}</td>
-                            </tr>
+                                    <tr>
+                                        <td style='padding:8px 0;'><strong>🚗 Servizio</strong></td>
+                                        <td>{appointment.Title}</td>
+                                    </tr>
 
-                        </table>
+                                </table>
+
+                            </div>
+
+                            <p style='margin-bottom:0;color:#555;font-size:15px;'>
+                                L'appuntamento è disponibile nel planning di <strong>Meet Amalfi Coast</strong> e su Google Calendar per la consultazione e la gestione.
+                            </p>
+
+                        </div>
+
+                        <div style='background:#f8f8f8;border-top:1px solid #e5e5e5;padding:18px;text-align:center;font-size:12px;color:#777;'>
+                            Questa è una notifica automatica generata dal sito web di Meet Amalfi Coast.
+                        </div>
 
                     </div>
 
-                    <p style='margin-bottom:0;color:#555;font-size:15px;'>
-                        L'appuntamento è disponibile nel planning di <strong>Meet Amalfi Coast</strong> e su Google Calendar per la consultazione e la gestione.
-                    </p>
-
-                </div>
-
-                <div style='background:#f8f8f8;border-top:1px solid #e5e5e5;padding:18px;text-align:center;font-size:12px;color:#777;'>
-                    Questa è una notifica automatica generata dal sito web di Meet Amalfi Coast.
-                </div>
-
-            </div>
-
-        </body>
-        </html>";
+                </body>
+            </html>";
 
         await SendAsync(
             _settings.To,
+            subject,
+            body);
+    }
+
+    // Invia una notifica di appuntamento aggiornato via email
+    public async Task SendAppointmentRescheduledEmailAsync(PlanningAppointmentModel oldAppointment, PlanningAppointmentModel newAppointment)
+    {
+        string subject = "Your booking has been updated - Meet Amalfi Coast";
+
+        string body = $@"
+            <!DOCTYPE html>
+            <html>
+                <body style='margin:0;padding:30px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;'>
+
+                    <div style='max-width:650px;margin:auto;background:#ffffff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;'>
+
+                        <div style='background:#111111;padding:25px;text-align:center;'>
+                            <h2 style='margin:0;color:#d6ad61;'>
+                                Your booking has been updated
+                            </h2>
+                        </div>
+
+                        <div style='padding:30px;'>
+
+                            <p>Hello dear customer,</p>
+
+                            <p>
+                                We'd like to let you know that your booking has been rescheduled.
+                            </p>
+
+                            <h3 style='color:#d6ad61;'>Previous booking</h3>
+
+                            <table style='width:100%;border-collapse:collapse;margin-bottom:25px;'>
+
+                                <tr>
+                                    <td><strong>Date</strong></td>
+                                    <td>{FormatEnglishDate(oldAppointment.IsoDate)}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Time</strong></td>
+                                    <td>{FormatEnglishTime(oldAppointment.Start)} - {FormatEnglishTime(oldAppointment.End)}</td>
+                                </tr>
+
+                            </table>
+
+                            <h3 style='color:#d6ad61;'>New booking</h3>
+
+                            <table style='width:100%;border-collapse:collapse;'>
+
+                                <tr>
+                                    <td><strong>Date</strong></td>
+                                    <td>{FormatEnglishDate(newAppointment.IsoDate)}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Time</strong></td>
+                                    <td>{FormatEnglishTime(newAppointment.Start)} - {FormatEnglishTime(newAppointment.End)}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Service</strong></td>
+                                    <td>{newAppointment.Title}</td>
+                                </tr>
+
+                            </table>
+
+                            <p style='margin-top:30px;'>
+                                If you have any questions, please don't hesitate to contact us.
+                            </p>
+
+                            <p>
+                                We look forward to welcoming you!
+                            </p>
+
+                        </div>
+
+                        <div style='background:#f8f8f8;border-top:1px solid #e5e5e5;padding:18px;text-align:center;font-size:12px;color:#777;'>
+                            <a href='https://www.meetamalficoast.com' style='color:#d6ad61;text-decoration:underline;' target='_blank'>Meet Amalfi Coast</a>
+                        </div>
+
+                    </div>
+
+                </body>
+            </html>";
+
+        await SendAsync(
+            newAppointment.CustomerEmail,
+            subject,
+            body);
+    }
+
+    // Invia una notifica di cancellazione appuntamento via email
+    public async Task SendAppointmentCancelledEmailAsync(PlanningAppointmentModel appointment)
+    {
+        string subject = "Your booking has been cancelled - Meet Amalfi Coast";
+
+        string body = $@"
+            <!DOCTYPE html>
+            <html>
+                <body style='margin:0;padding:30px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;'>
+
+                    <div style='max-width:650px;margin:auto;background:#ffffff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;'>
+
+                        <div style='background:#111111;padding:25px;text-align:center;'>
+                            <h2 style='margin:0;color:#d6ad61;'>
+                                Booking cancelled
+                            </h2>
+                        </div>
+
+                        <div style='padding:30px;'>
+
+                            <p>Hello dear customer,</p>
+
+                            <p>
+                                We would like to inform you that your booking has been cancelled.
+                            </p>
+
+                            <table style='width:100%;border-collapse:collapse;margin-top:25px;'>
+
+                                <tr>
+                                    <td><strong>Date</strong></td>
+                                    <td>{FormatEnglishDate(appointment.IsoDate)}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Time</strong></td>
+                                    <td>{FormatEnglishTime(appointment.Start)} - {FormatEnglishTime(appointment.End)}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Service</strong></td>
+                                    <td>{appointment.Title}</td>
+                                </tr>
+
+                            </table>
+
+                            <p style='margin-top:30px;'>
+                                If this cancellation was unexpected or you would like to arrange a new booking, please contact us.
+                            </p>
+
+                            <p>
+                                We apologize for any inconvenience and hope to welcome you in the future.
+                            </p>
+
+                        </div>
+
+                        <div style='background:#f8f8f8;border-top:1px solid #e5e5e5;padding:18px;text-align:center;font-size:12px;color:#777;'>
+                            <a href='https://www.meetamalficoast.com' style='color:#d6ad61;text-decoration:underline;' target='_blank'>Meet Amalfi Coast</a>
+                        </div>
+
+                    </div>
+
+                </body>
+            </html>";
+
+        await SendAsync(
+            appointment.CustomerEmail,
             subject,
             body);
     }

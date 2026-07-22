@@ -11,7 +11,7 @@ public class GoogleCalendarAppointmentParserService
         @"\+?[0-9][0-9\s().-]{6,20}",
         RegexOptions.Compiled);
 
-    public GoogleCalendarAppointmentInfo Parse(
+    public GoogleCalendarAppointmentInfoModel Parse(
         string? summary,
         string? description)
     {
@@ -40,7 +40,7 @@ public class GoogleCalendarAppointmentParserService
 
         string notes = NormalizeNotes(text);
 
-        return new GoogleCalendarAppointmentInfo
+        return new GoogleCalendarAppointmentInfoModel
         {
             CustomerName = customerName,
             CustomerEmail = customerEmail,
