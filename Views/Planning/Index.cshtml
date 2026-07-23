@@ -1,4 +1,7 @@
-﻿@{
+﻿@using MeetAmalfiCoast.Services.Configuration
+@inject ApplicationConfigurationService ApplicationConfigurationService
+
+@{
   ViewData["Title"] = "Book Your Transfer";
   ViewData["Description"] = "Book your private transfer or Amalfi Coast tour online quickly and securely with Meet Amalfi Coasts.";
   Layout = "_PlanningLayout";
@@ -16,6 +19,11 @@
 
   <script src="/js/planning/firebaseConfig.js"></script>
   <script src="/js/planning/planningService.js"></script>
+  <script>
+    window.planningSettings = {
+        orarioMinimoPrenotabile: @ApplicationConfigurationService.OrarioMinimoPrenotabile
+    };
+</script>
   <script src="/js/planning/planning.js"></script>
 }
 

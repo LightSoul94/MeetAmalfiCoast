@@ -22,6 +22,8 @@ const endHour = 20;
 const slotHeight = 60;
 const minutesStep = 15;
 
+const minimumBookingAdvanceMinutes = window.planningSettings?.orarioMinimoPrenotabile ?? 0;
+
 $(document).ready(function () {
 
   loadAppointmentsForSelectedWeek();
@@ -38,7 +40,8 @@ $(document).ready(function () {
 
   setInterval(() => {
     renderCurrentTimeLine();
-  }, 1000);
+    renderUnavailableSlots();
+  }, 60000);
 
   $("#todayWeek").on("click", function () {
     selectedDate = new Date();
@@ -72,6 +75,7 @@ function renderCalendar() {
     });
   }
 
+  renderUnavailableSlots();
   renderCurrentTimeLine();
 }
 
@@ -95,6 +99,41 @@ function renderTimeColumn() {
   }
 
   $("#calendarGrid").append(timeColumn);
+}
+
+function renderUnavailableSlots() {
+  const minimumBookableDateTime = new Date(
+    Date.now() + minimumBookingAdvanceMinutes * 60 * 1000
+  );
+
+  $(".day-slot").each(function () {
+    const slot = $(this);
+
+    const isoDate = slot.attr("data-date");
+    const time = slot.attr("data-time");
+
+    if (!isoDate || !time) {
+      return;
+    }
+
+    const slotDateTime = new Date(
+      `${isoDate}T${time}:00`
+    );
+
+    const isDisabledSlot =
+      slotDateTime < minimumBookableDateTime;
+
+    slot.toggleClass("disabled-slot", isDisabledSlot);
+    slot.removeClass("last-disabled-slot");
+  });
+
+  const todayIso = toIsoDate(new Date());
+
+  const lastDisabledSlot = $(
+    `.day-slot[data-date="${todayIso}"].disabled-slot`
+  ).last();
+
+  lastDisabledSlot.addClass("last-disabled-slot");
 }
 
 function loadAppointmentsForSelectedWeek() {
@@ -140,15 +179,23 @@ function renderDayColumn(dayInfo) {
   const column = $("<div>").addClass("day-column");
 
   const todayIso = toIsoDate(new Date());
+  const now = new Date();
 
-  if (dayInfo.isoDate === todayIso) {
+  const minimumBookableDateTime =
+    new Date(
+      now.getTime() + minimumBookingAdvanceMinutes * 60 * 1000
+    );
+
+  const isToday = dayInfo.isoDate === todayIso;
+
+  if (isToday) {
     column.addClass("today-column");
   }
 
   column.append(
     $("<div>")
       .addClass("day-header")
-      .toggleClass("today-header", dayInfo.isoDate === todayIso)
+      .toggleClass("today-header", isToday)
       .html(`${capitalize(dayInfo.name)}<br><small>${dayInfo.shortDate}</small>`)
   );
 
@@ -156,17 +203,38 @@ function renderDayColumn(dayInfo) {
 
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += minutesStep) {
-      const time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(
-        2,
-        "0"
-      )}`;
+      const time =
+        `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+      const slotDateTime = new Date(
+        `${dayInfo.isoDate}T${time}:00`
+      );
+
+      const isDisabledSlot = slotDateTime < minimumBookableDateTime;
+
+      const nextSlotDateTime =
+        new Date(
+          slotDateTime.getTime() + minutesStep * 60 * 1000
+        );
+
+      const isLastDisabledSlot = dayInfo.isoDate === todayIso && isDisabledSlot && nextSlotDateTime >= minimumBookableDateTime;
 
       const slot = $("<div>")
         .addClass("day-slot quarter-slot")
+        .toggleClass("disabled-slot", isDisabledSlot)
+        .toggleClass("last-disabled-slot", isLastDisabledSlot)
         .attr("data-date", dayInfo.isoDate)
         .attr("data-time", time)
-        .append($("<span>").addClass("slot-time").text(time))
+        .append(
+          $("<span>")
+            .addClass("slot-time")
+            .text(time)
+        )
         .on("click", function () {
+          if ($(this).hasClass("disabled-slot")) {
+            return;
+          }
+
           openCreateAppointmentAlert(dayInfo, time);
         });
 
@@ -254,7 +322,7 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
                 <hr>
             </div>
             `,
-    
+
     showCancelButton: true,
     confirmButtonText: "Paga acconto e prenota",
     cancelButtonText: "Annulla",
@@ -264,7 +332,8 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
         format: dateFormat,
         autoclose: true,
         todayHighlight: true,
-        weekStart: 1
+        weekStart: 1,
+        startDate: new Date()
       });
 
       $("#swal-date").datepicker("setDate", dayInfo.date);
@@ -279,8 +348,24 @@ function openCreateAppointmentAlert(dayInfo, startTime) {
       const start = $("#swal-start").val();
       const end = $("#swal-end").val();
 
-      if (!isoDate || !title || !customer || !start || !customerPhone || !start || !end) {
+      const minimumBookableDateTime = new Date(
+        Date.now() + minimumBookingAdvanceMinutes * 60 * 1000
+      );
+
+      const appointmentDateTime = new Date(
+        `${isoDate}T${start}:00`
+      );
+
+      if (!isoDate || !start || !end || !title || !customer || !customerPhone) {
         Swal.showValidationMessage("Compila tutti i campi");
+        return false;
+      }
+
+      if (appointmentDateTime < minimumBookableDateTime) {
+        Swal.showValidationMessage(
+          `La prenotazione deve essere effettuata con almeno ${minimumBookingAdvanceMinutes} minuti di anticipo`
+        );
+
         return false;
       }
 

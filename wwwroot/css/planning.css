@@ -3,7 +3,7 @@ body {
 }
 
 .navbar {
-    flex-wrap: none !important;
+  flex-wrap: none !important;
 }
 
 .planning-header {
@@ -44,6 +44,23 @@ body {
   background: #1b1b1b;
   border-bottom: 1px solid rgba(214, 173, 97, .35);
   text-align: center;
+}
+
+.day-slot.disabled-slot {
+  cursor: not-allowed;
+  pointer-events: none;
+
+  background-image:
+    repeating-linear-gradient(-45deg,
+      rgba(214, 173, 97, .08) 0px,
+      rgba(214, 173, 97, .08) 2px,
+      transparent 2px,
+      transparent 12px);
+}
+
+.day-slot.last-disabled-slot {
+    border-bottom: 2px solid #d6ad61;
+    box-shadow: 0 1px 6px rgba(214, 173, 97, .35);
 }
 
 .time-slot {
@@ -129,13 +146,13 @@ body {
 }
 
 .current-time-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: red;
-    z-index: 999;
-    pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: red;
+  z-index: 999;
+  pointer-events: none;
 }
 
 .day-header {
@@ -195,34 +212,32 @@ body {
 
 /* Stile per la colonna della giornata corrente */
 .today-column {
-    background: rgba(214, 173, 97, 0.06);
-    position: relative;
+  background: rgba(214, 173, 97, 0.06);
+  position: relative;
 }
 
 .today-column .slot-time {
-    color: transparent;
+  color: transparent;
 }
 
 .today-column .day-slot:hover .slot-time {
-    color: rgb(54, 43, 24);
+  color: rgb(54, 43, 24);
 }
 
 .today-column::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 2px solid rgba(214,173,97,.45);
-    pointer-events: none;
-    z-index: 5;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(214, 173, 97, .45);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .today-header {
-    background: linear-gradient(
-        180deg,
-        rgba(214,173,97,.22),
-        rgba(214,173,97,.08)
-    );
+  background: linear-gradient(180deg,
+      rgba(214, 173, 97, .22),
+      rgba(214, 173, 97, .08));
 
-    color: #f0d28a;
-    font-weight: bold;
+  color: #f0d28a;
+  font-weight: bold;
 }

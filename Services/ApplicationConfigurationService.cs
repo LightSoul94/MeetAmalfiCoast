@@ -14,6 +14,9 @@ public class ApplicationConfigurationService
 
     public bool IsDebugMode => _settings.Debug;
 
+    public int OrarioMinimoPrenotabile =>
+    _settings.OrarioMinimoPrenotabile;
+
     public string BaseUrl =>
         _settings.Debug
             ? "http://localhost:5087"

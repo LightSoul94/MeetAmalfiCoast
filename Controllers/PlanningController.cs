@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MeetAmalfiCoast.Models;
 using MeetAmalfiCoast.Services.Configuration;
+using System.Globalization;
 using Stripe;
 
 namespace MeetAmalfiCoast.Controllers;
@@ -128,6 +129,55 @@ public class PlanningController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] PlanningAppointmentModel appointment)
     {
+        // Controlla la validità della data/ora inserita e blocca le prenotazioni nel passato.
+        if (!DateTime.TryParseExact(
+        $"{appointment.IsoDate} {appointment.Start}",
+        "yyyy-MM-dd HH:mm",
+        CultureInfo.InvariantCulture,
+        DateTimeStyles.None,
+        out DateTime appointmentStart))
+        {
+            return Json(new
+            {
+                success = false,
+                message = "La data o l'orario della prenotazione non sono validi."
+            });
+        }
+
+        // Verifica che l'orario di fine della prenotazione sia valido e formattato correttamente.
+        if (!DateTime.TryParseExact(
+        $"{appointment.IsoDate} {appointment.End}",
+        "yyyy-MM-dd HH:mm",
+        CultureInfo.InvariantCulture,
+        DateTimeStyles.None,
+        out DateTime appointmentEnd))
+        {
+            return Json(new
+            {
+                success = false,
+                message = "L'orario di fine della prenotazione non è valido."
+            });
+        }
+
+        if (appointmentStart <= DateTime.Now)
+        {
+            return Json(new
+            {
+                success = false,
+                message = "Non è possibile prenotare una data o un orario già trascorso."
+            });
+        }
+
+        if (appointmentEnd <= appointmentStart)
+        {
+            return Json(new
+            {
+                success = false,
+                message = "L'orario di fine deve essere successivo all'orario di inizio."
+            });
+        }
+
+        // Se il bypass Stripe è attivo, crea l'appuntamento direttamente; altrimenti avvia la sessione di checkout Stripe.
         if (_settings.BypassStripe)
         {
             string appointmentId = await _firestorePlanningService.CreatePaidAppointmentAsync(
